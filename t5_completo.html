@@ -169,6 +169,7 @@
   .option.wrong{border-color:#dc2626 !important;background:#fee2e2 !important;}
   .option.disabled{cursor:default;opacity:.92;}
   .option input{accent-color:var(--primary);}
+  .option label code{font-size:.85em;}
   .feedback-imediato{display:none;margin-top:12px;padding:12px 16px;border-radius:8px;
     font-size:.88rem;line-height:1.6;}
   .feedback-imediato.mostrar{display:block;}
@@ -982,7 +983,7 @@ var LABS = {
 };
 
 /* ============================================================
-   QUESTÕES
+   QUESTÕES — OPÇÃO A: array com tags CRUAS + esc() na renderização
    ============================================================ */
 var QUESTOES = [
   {
@@ -1045,7 +1046,7 @@ var QUESTOES = [
     opcoes: [
       { l:'a', t:'Todos terem o mesmo atributo name.' },
       { l:'b', t:'Todos terem o mesmo id.' },
-      { l:'c', t:'Todos estarem dentro de <fieldset>.' },
+      { l:'c', t:'Todos estarem dentro de fieldset.' },
       { l:'d', t:'Todos terem type="single".' }
     ],
     correta:'a',
@@ -1128,6 +1129,7 @@ var QUESTOES = [
     correta:'c',
     explicacao:'multiple habilita múltiplos valores. No e-mail, os endereços devem ser separados por vírgula.'
   },
+  /* ===== Q14 — tags CRUAS no array (esc() escapa na renderização) ===== */
   {
     pergunta: 'Qual é a tag correta para criar um rótulo associado a um input de forma acessível?',
     opcoes: [
@@ -1150,6 +1152,7 @@ var QUESTOES = [
     correta:'b',
     explicacao:'Fieldset é o grupo; legend é o título do grupo. Leitores de tela anunciam o título ao usuário entrar no grupo.'
   },
+  /* ===== Q16 — tags CRUAS no array + explicação com entidades ===== */
   {
     pergunta: 'Em um formulário com <code>&lt;select&gt;</code>, qual tag envolve cada opção individual?',
     opcoes: [
@@ -1159,7 +1162,7 @@ var QUESTOES = [
       { l:'d', t:'<select-item>' }
     ],
     correta:'a',
-    explicacao:'A estrutura é <select><option value="...">Texto</option></select>.'
+    explicacao:'A estrutura é &lt;select&gt;&lt;option value="..."&gt;Texto&lt;/option&gt;&lt;/select&gt;.'
   },
   {
     pergunta: 'Qual é a diferença entre <code>&lt;input type="text"&gt;</code> e <code>&lt;textarea&gt;</code>?',
@@ -1350,7 +1353,8 @@ function montarQuestoes() {
       radio.name = 'q' + (idx + 1);
       radio.value = op.l;
       var label = document.createElement('label');
-      label.innerHTML = '<strong>' + op.l + ')</strong> ' + op.t;
+      // OPÇÃO A: array com tags cruas + esc() na renderização
+      label.innerHTML = '<strong>' + op.l + ')</strong> ' + esc(op.t);
       opt.appendChild(radio);
       opt.appendChild(label);
       opt.addEventListener('click', function(ev){
