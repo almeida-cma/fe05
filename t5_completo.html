@@ -1,0 +1,1530 @@
+Sim, consigo replicar o código com apenas essa alteração. Todos os `action` dos formulários (nos exemplos fixos e nos 5 labs) foram trocados para `https://httpbin.org/post`, mantendo `method="post"` e todo o restante intacto.
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 TEMA 05 • Formulários HTML — Laboratório Interativo</title>
+<style>
+  :root{
+    --bg-body:#06101c; --surface-dark:#0f1b2d; --surface-hover:#1b2a42;
+    --card-white:#ffffff; --primary:#0369a1; --primary-hover:#075985;
+    --primary-light:#38bdf8; --accent:#0d9488; --accent-light:#2dd4bf;
+    --text-dark:#0f172a; --text-muted:#64748b;
+    --border-light:#e2e8f0; --border-dark:#334155; --radius-main:20px;
+    --transicao:all .25s ease;
+    --tok-bg:#0a1420; --tok-tag:#7dd3fc; --tok-attr:#fbbf24;
+    --tok-string:#86efac; --tok-punct:#cbd5e1; --tok-text:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(circle at 10% 15%,#062a3a 0%,#06101c 65%);
+    color:var(--text-dark);min-height:100vh;padding:24px 14px 90px;line-height:1.6;}
+  .container{max-width:1180px;margin:0 auto;}
+
+  .header{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 50%,#0d9488 100%);
+    border-radius:var(--radius-main);padding:38px 24px;margin-bottom:24px;text-align:center;
+    color:#fff;box-shadow:0 12px 35px rgba(3,105,161,.4);}
+  .header h1{font-size:2.1rem;margin-bottom:8px;letter-spacing:-.5px;
+    display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+  .header h1 span{color:#a7f3d0;}
+  .header p{opacity:.95;font-size:1.05rem;max-width:900px;margin:0 auto;}
+  .badge-group{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px;}
+  .badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+    padding:5px 14px;border-radius:30px;font-size:.75rem;font-weight:700;color:#fff;}
+
+  .tabs-nav{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:22px;}
+  .tab-btn{background:var(--surface-dark);color:#94a3b8;border:1px solid var(--border-dark);
+    padding:12px 18px;border-radius:30px;font-size:.88rem;font-weight:700;cursor:pointer;
+    white-space:nowrap;transition:var(--transicao);font-family:inherit;}
+  .tab-btn:hover{color:#fff;background:var(--surface-hover);}
+  .tab-btn.active{background:linear-gradient(135deg,#075985,#0d9488);color:#fff;
+    border-color:#2dd4bf;box-shadow:0 0 16px rgba(13,148,136,.45);}
+  .tab-content{display:none;animation:fadeIn .3s ease-out;}
+  .tab-content.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .card{background:var(--card-white);border-radius:var(--radius-main);padding:28px;
+    margin-bottom:24px;box-shadow:0 10px 30px rgba(0,0,0,.15);}
+  .card h2{color:#075985;margin-bottom:14px;border-left:5px solid var(--primary);
+    padding-left:12px;font-size:1.45rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .card h3{color:#0f172a;margin:22px 0 10px 0;font-size:1.15rem;border-bottom:2px dashed #cbd5e1;padding-bottom:6px;}
+  .card h4{color:#1e293b;margin:18px 0 8px 0;font-size:1rem;font-weight:700;}
+  .card p{color:#334155;margin-bottom:12px;font-size:.96rem;}
+  .card ul,.card ol{color:#334155;line-height:1.8;margin:8px 0 14px 25px;font-size:.95rem;}
+
+  .highlight-box{padding:16px 20px;border-radius:12px;margin:14px 0;font-size:.94rem;line-height:1.7;}
+  .highlight-box.blue{background:#e0f2fe;border-left:5px solid #0284c7;color:#0c4a6e;}
+  .highlight-box.amber{background:#fef3c7;border-left:5px solid #d97706;color:#78350f;}
+  .highlight-box.rose{background:#ffe4e6;border-left:5px solid #e11d48;color:#881337;}
+  .highlight-box.green{background:#dcfce7;border-left:5px solid #16a34a;color:#14532d;}
+  .highlight-box.purple{background:#ede9fe;border-left:5px solid #7c3aed;color:#4c1d95;}
+  .highlight-box code{background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.15);
+    color:#0f172a;padding:2px 6px;border-radius:4px;font-weight:800;font-family:'Courier New',monospace;font-size:.88em;}
+
+  code{background:#f1f5f9;color:#0c4a6e;padding:2px 6px;border-radius:4px;
+    font-family:'Courier New',monospace;font-weight:700;font-size:.88em;border:1px solid var(--border-light);}
+
+  .tabela-logica{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem;}
+  .tabela-logica th{background:linear-gradient(135deg,#0c4a6e,#0d9488);color:#fff;
+    padding:12px 14px;text-align:left;font-weight:600;}
+  .tabela-logica td{padding:12px 14px;border-bottom:1px solid var(--border-light);
+    color:#334155;vertical-align:top;}
+  .tabela-logica tr:hover td{background:#f8fafc;}
+
+  .code-wrapper{position:relative;margin:18px 0;border-radius:14px;overflow:hidden;
+    border:1px solid var(--border-dark);background:#0a1420;}
+  .code-header{display:flex;justify-content:space-between;align-items:center;
+    background:#0f1b2d;padding:10px 16px;border-bottom:1px solid var(--border-dark);flex-wrap:wrap;gap:8px;}
+  .code-title{color:#7dd3fc;font-size:.84rem;font-weight:700;font-family:monospace;}
+  .code-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .code-actions button{border:none;padding:6px 14px;border-radius:6px;cursor:pointer;
+    font-size:.76rem;font-weight:700;transition:var(--transicao);
+    display:inline-flex;align-items:center;gap:5px;font-family:inherit;}
+  .copy-btn{background:#10b981;color:#042f2e;}
+  .copy-btn:hover{background:#059669;color:#fff;}
+  .run-oc-btn{background:#0d9488;color:#fff;}
+  .run-oc-btn:hover{background:#0f766e;}
+  .run-inline-btn{background:#0284c7;color:#fff;}
+  .run-inline-btn:hover{background:#0369a1;}
+  .download-btn{background:#8b5cf6;color:#fff;}
+  .download-btn:hover{background:#7c3aed;}
+  .code-pane{padding:18px 20px;color:#e2e8f0;font-family:'Courier New',monospace;
+    font-size:.82rem;line-height:1.65;overflow-x:auto;white-space:pre;max-height:520px;}
+  .preview-inline{margin:14px 0;border:1px solid var(--border-dark);border-radius:12px;overflow:hidden;background:#0a1420;}
+  .preview-inline .preview-header{display:flex;justify-content:space-between;align-items:center;
+    padding:8px 12px;background:#0f1b2d;border-bottom:1px solid #1e293b;color:#cbd5e1;
+    font-size:.78rem;font-weight:700;font-family:monospace;gap:8px;flex-wrap:wrap;}
+  .preview-inline .preview-close{background:transparent;border:1px solid #334155;color:#f87171;
+    padding:3px 10px;border-radius:6px;cursor:pointer;font-size:.72rem;font-weight:700;font-family:inherit;}
+  .preview-inline iframe{width:100%;height:480px;border:none;background:#fff;display:block;}
+
+  .demo-form{background:#f8fafc;border:2px dashed #94a3b8;border-radius:12px;padding:20px;margin:14px 0;}
+  .demo-form label{display:block;color:#334155;font-weight:700;font-size:.86rem;margin-bottom:4px;margin-top:12px;}
+  .demo-form input,.demo-form select,.demo-form textarea{
+    width:100%;padding:9px 12px;border:1.5px solid #cbd5e1;border-radius:8px;
+    font-family:inherit;font-size:.9rem;color:#0f172a;background:#fff;}
+  .demo-form input:focus,.demo-form select:focus,.demo-form textarea:focus{
+    outline:none;border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.15);}
+  .demo-form button{margin-top:16px;background:linear-gradient(135deg,#0369a1,#0d9488);color:#fff;
+    border:none;padding:10px 24px;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .demo-form button:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(3,105,161,.3);}
+  .demo-form .grupo-radio{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+  .demo-form .grupo-radio label{display:flex;align-items:center;gap:8px;font-weight:500;margin:0;color:#334155;}
+  .demo-form .grupo-radio input{width:auto;}
+
+  .arvore-wrap{background:#0a1420;border:2px solid var(--border-dark);border-radius:14px;
+    padding:18px;margin:12px 0;font-family:'Courier New',monospace;font-size:.74rem;
+    line-height:1.65;overflow-x:auto;color:#e2e8f0;}
+  .arvore-linha{padding:2px 0;white-space:pre;}
+  .arvore-tipo{display:inline-block;padding:1px 6px;border-radius:4px;
+    font-weight:800;font-size:.72rem;margin-right:6px;}
+  .tipo-root{background:#475569;color:#f1f5f9;}
+  .tipo-form{background:#8b5cf6;color:#fff;}
+  .tipo-textbox{background:#10b981;color:#042f2e;}
+  .tipo-checkbox{background:#3b82f6;color:#fff;}
+  .tipo-radiogroup{background:#f59e0b;color:#1e293b;}
+  .tipo-button{background:#ef4444;color:#fff;}
+  .tipo-combobox{background:#0d9488;color:#fff;}
+  .tipo-group{background:#6366f1;color:#fff;}
+  .tipo-static{background:#334155;color:#cbd5e1;}
+  .arvore-badge-diferenca{display:inline-block;padding:1px 8px;border-radius:6px;
+    font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-left:6px;}
+  .badge-bom{background:#dcfce7;color:#14532d;}
+  .badge-ruim{background:#fee2e2;color:#991b1b;}
+
+  .passos-container{display:flex;flex-direction:column;gap:14px;margin:16px 0;}
+  .passo-item{background:#f8fafc;border-left:4px solid #0284c7;border-radius:10px;
+    padding:14px 18px;display:flex;gap:14px;align-items:flex-start;}
+  .passo-numero{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;
+    width:32px;height:32px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-weight:900;font-size:1rem;flex-shrink:0;}
+  .passo-conteudo{flex:1;}
+  .passo-conteudo strong{display:block;color:#075985;font-size:.95rem;margin-bottom:4px;}
+  .passo-conteudo p{color:#334155;font-size:.9rem;margin-bottom:6px;}
+  .passo-conteudo .atalho{display:inline-block;background:#1e293b;color:#7dd3fc;
+    padding:2px 8px;border-radius:4px;font-family:'Courier New',monospace;
+    font-size:.82em;font-weight:700;border:1px solid #475569;margin:0 2px;}
+
+  .quiz-header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+    background:#0f1b2d;color:#fff;padding:14px 20px;border-radius:12px;margin-bottom:20px;}
+  .quiz-header .progresso-texto{font-size:.9rem;}
+  .barra-fundo{flex:1;min-width:140px;height:10px;background:#334155;border-radius:5px;overflow:hidden;}
+  .barra-preenchimento{height:100%;width:0%;background:linear-gradient(90deg,#38bdf8,#0d9488);transition:width .3s;}
+
+  .question{background:#f8fafc;border-radius:12px;padding:18px 20px;margin-bottom:16px;
+    border-left:4px solid var(--primary);border-top:1px solid var(--border-light);
+    border-right:1px solid var(--border-light);border-bottom:1px solid var(--border-light);}
+  .question-header{font-weight:700;color:#0f172a;margin-bottom:12px;display:flex;
+    align-items:flex-start;gap:10px;font-size:.96rem;line-height:1.5;}
+  .question-header code{font-size:.92em;background:#e0f2fe;border-color:#7dd3fc;color:#0c4a6e;padding:1px 6px;}
+  .question-number{background:var(--primary);color:#fff;width:26px;height:26px;border-radius:50%;
+    text-align:center;line-height:26px;font-size:12px;font-weight:bold;flex-shrink:0;margin-top:2px;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .option{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;
+    border-radius:8px;border:2px solid var(--border-light);cursor:pointer;
+    transition:var(--transicao);font-size:.9rem;color:#334155;}
+  .option:hover:not(.disabled){border-color:var(--primary);background:#e0f2fe;transform:translateX(3px);}
+  .option.selecionada{border-color:#0284c7;background:#e0f2fe;}
+  .option.correct{border-color:#16a34a !important;background:#dcfce7 !important;}
+  .option.wrong{border-color:#dc2626 !important;background:#fee2e2 !important;}
+  .option.disabled{cursor:default;opacity:.92;}
+  .option input{accent-color:var(--primary);}
+  .feedback-imediato{display:none;margin-top:12px;padding:12px 16px;border-radius:8px;
+    font-size:.88rem;line-height:1.6;}
+  .feedback-imediato.mostrar{display:block;}
+  .feedback-imediato.ok{background:#dcfce7;color:#14532d;border-left:4px solid #16a34a;}
+  .feedback-imediato.no{background:#fee2e2;color:#881337;border-left:4px solid #dc2626;}
+
+  .results{background:#fff;border:2px solid #0d9488;border-radius:12px;padding:18px 22px;
+    margin-top:20px;display:none;}
+  .results.mostrar{display:block;}
+  .results h4{color:#115e59;margin-bottom:10px;}
+  .results .gabarito-item{padding:10px 0;border-bottom:1px solid #e2e8f0;font-size:.88rem;color:#334155;}
+
+  .btn-grupo{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap;}
+  .btn{background:linear-gradient(135deg,var(--primary),#0d9488);color:#fff;border:none;
+    padding:12px 26px;border-radius:30px;cursor:pointer;font-size:.95rem;font-weight:700;
+    transition:var(--transicao);font-family:inherit;}
+  .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 18px rgba(3,105,161,.35);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+  .btn-secondary{background:#64748b;}
+  .btn-success{background:#16a34a;}
+
+  .toast-notificacao{position:fixed;bottom:24px;right:24px;background:#0d9488;color:#fff;
+    padding:12px 20px;border-radius:10px;font-weight:bold;font-size:.85rem;
+    box-shadow:0 10px 25px rgba(0,0,0,.3);display:none;z-index:9999;
+    animation:slideUp .3s ease;max-width:340px;line-height:1.5;}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .btn-top{position:fixed;bottom:20px;right:20px;background:var(--primary);color:#fff;
+    border:none;padding:10px 18px;border-radius:50px;cursor:pointer;font-size:12px;
+    font-weight:700;box-shadow:0 4px 15px rgba(0,0,0,.25);z-index:100;}
+
+  @media (max-width:768px){
+    .header h1{font-size:1.6rem;}
+    .card{padding:18px 14px;}
+    .tab-btn{padding:10px 14px;font-size:.8rem;}
+    .preview-inline iframe{height:380px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="inicio">
+  <header class="header">
+    <h1>📋 TEMA <span>05</span> &bull; Formulários HTML</h1>
+    <p>A ponte entre o usuário e o servidor: anatomia do <code style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.35);color:#fff;">&lt;form&gt;</code>, types de input, validação nativa, acessibilidade e diagnóstico</p>
+    <div class="badge-group">
+      <span class="badge">📝 Anatomia do Form</span>
+      <span class="badge">🎛️ Types do Input</span>
+      <span class="badge">✅ Validação HTML5</span>
+      <span class="badge">🧩 Complementos</span>
+      <span class="badge">💻 Labs executáveis</span>
+      <span class="badge">♿ Acessibilidade</span>
+      <span class="badge">📝 Avaliação</span>
+    </div>
+  </header>
+
+  <nav class="tabs-nav">
+    <button type="button" class="tab-btn active" data-aba="aba-anatomia">📝 1. Anatomia</button>
+    <button type="button" class="tab-btn" data-aba="aba-types">🎛️ 2. Types</button>
+    <button type="button" class="tab-btn" data-aba="aba-validacao">✅ 3. Validação</button>
+    <button type="button" class="tab-btn" data-aba="aba-complementos">🧩 4. Complementos</button>
+    <button type="button" class="tab-btn" data-aba="aba-labs">💻 5. Labs</button>
+    <button type="button" class="tab-btn" data-aba="aba-a11y">♿ 6. Acessibilidade</button>
+    <button type="button" class="tab-btn" data-aba="aba-quiz">📝 7. Avaliação</button>
+  </nav>
+
+  <!-- ABA 1 — ANATOMIA -->
+  <div id="aba-anatomia" class="tab-content active">
+    <section class="card">
+      <h2>📝 Anatomia de um formulário HTML</h2>
+
+      <div class="highlight-box blue">
+        <strong>💡 Conceito fundamental:</strong> o elemento <code>&lt;form&gt;</code> é o contêiner que agrupa os campos de entrada, botões de envio e atributos que dizem ao navegador <em>para onde</em>, <em>como</em> e <em>com qual codificação</em> enviar os dados. Sem ele, os campos são apenas decoração visual.
+      </div>
+
+      <h3>🏷️ Estrutura mínima de um formulário</h3>
+
+      <div class="code-wrapper">
+        <div class="code-header">
+          <span class="code-title">anatomia-form.html</span>
+          <div class="code-actions">
+            <button type="button" class="copy-btn" data-copiar="anatomia">📋 Copiar</button>
+            <button type="button" class="run-inline-btn" data-preview="anatomia">🧪 Preview</button>
+            <button type="button" class="run-oc-btn" data-onecompiler="anatomia">▶️ OneCompiler</button>
+          </div>
+        </div>
+        <div class="code-pane"><pre id="codigo-anatomia"></pre></div>
+      </div>
+      <div id="preview-anatomia"></div>
+
+      <h3>🔍 Cada atributo do <code>&lt;form&gt;</code> em detalhe</h3>
+      <table class="tabela-logica">
+        <thead>
+          <tr><th>Atributo</th><th>Valores típicos</th><th>Função</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>action</code></td><td>URL do endpoint</td><td>Para onde os dados serão enviados quando o formulário for submetido. Se omitido, os dados vão para a própria página.</td></tr>
+          <tr><td><code>method</code></td><td><code>get</code> ou <code>post</code></td><td>Método HTTP de envio. <strong>GET</strong> coloca os dados na URL e eles ficam visíveis; <strong>POST</strong> envia no corpo da requisição, invisível ao usuário — recomendado para senhas e dados sensíveis.</td></tr>
+          <tr><td><code>autocomplete</code></td><td><code>on</code> (padrão) ou <code>off</code></td><td>Controla o preenchimento automático do navegador. Convém desativar em campos de confirmação de e-mail, senha ou login.</td></tr>
+          <tr><td><code>novalidate</code></td><td>booleano</td><td>Desliga a validação automática do navegador para o formulário. Pouco usado, mas existe.</td></tr>
+          <tr><td><code>enctype</code></td><td><code>application/x-www-form-urlencoded</code></td><td>Codificação dos dados enviados. Formulários com upload de arquivos exigem <code>multipart/form-data</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>🆔 <code>name</code> vs <code>id</code>: o erro mais comum</h3>
+      <div class="highlight-box amber">
+        <strong>⚠️ Atenção:</strong> <code>name</code> é o que identifica o campo <em>no servidor</em>, quando o formulário é enviado. <code>id</code> é o que identifica o elemento <em>na página</em> — usado por CSS, JavaScript e pela associação com <code>&lt;label for="..."&gt;</code>. Um campo sem <code>name</code> simplesmente não é enviado. Um campo sem <code>id</code> fica fora da rotulagem acessível.
+      </div>
+
+      <div class="demo-form">
+        <label for="demo-nome">Nome (name="nome" id="demo-nome")</label>
+        <input type="text" id="demo-nome" name="nome" placeholder="Digite seu nome">
+        <label for="demo-email">E-mail (name="email" id="demo-email")</label>
+        <input type="email" id="demo-email" name="email" placeholder="voce@exemplo.com">
+        <button type="button">Enviar</button>
+      </div>
+
+      <div class="highlight-box green">
+        <strong>✅ Regra prática:</strong> todo input, select ou textarea precisa de <code>name</code> (para chegar ao servidor) e de <code>id</code> (para se associar a um <code>&lt;label&gt;</code>). Não são sinônimos e um não substitui o outro.
+      </div>
+    </section>
+  </div>
+
+  <!-- ABA 2 — TYPES -->
+  <div id="aba-types" class="tab-content">
+    <section class="card">
+      <h2>🎛️ Tipos de <code>&lt;input&gt;</code>: o type define o comportamento</h2>
+      <p>O atributo <code>type</code> transforma o mesmo elemento <code>&lt;input&gt;</code> em campo de texto, senha, data, cor, e-mail, número, barra de intervalo, hora ou URL. Cada tipo traz validação nativa e teclado contextual no celular.</p>
+
+      <h3>📊 Types essenciais — quadro comparativo</h3>
+      <table class="tabela-logica">
+        <thead>
+          <tr><th>type</th><th>Uso</th><th>Validação nativa</th><th>Atributos extras</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>text</code></td><td>Texto curto, uma linha</td><td>Nenhuma</td><td><code>maxlength</code>, <code>placeholder</code></td></tr>
+          <tr><td><code>password</code></td><td>Senhas</td><td>Nenhuma</td><td><code>minlength</code></td></tr>
+          <tr><td><code>email</code></td><td>Endereço de e-mail</td><td>Formato válido</td><td><code>multiple</code>, <code>required</code></td></tr>
+          <tr><td><code>number</code></td><td>Valores numéricos</td><td>Número válido</td><td><code>min</code>, <code>max</code>, <code>step</code></td></tr>
+          <tr><td><code>range</code></td><td>Barra horizontal</td><td>Intervalo</td><td><code>min</code>, <code>max</code>, <code>step</code></td></tr>
+          <tr><td><code>date</code></td><td>Data</td><td>Formato ISO (ano-mês-dia)</td><td><code>min</code>, <code>max</code></td></tr>
+          <tr><td><code>time</code></td><td>Horário</td><td>Formato hh:mm</td><td><code>min</code>, <code>max</code></td></tr>
+          <tr><td><code>color</code></td><td>Seletor de cor</td><td>Hexadecimal</td><td><code>value="#AABBCC"</code></td></tr>
+          <tr><td><code>url</code></td><td>Endereço web</td><td>URL válida</td><td><code>required</code></td></tr>
+          <tr><td><code>tel</code></td><td>Telefone</td><td>Nenhuma nativa</td><td><code>pattern</code>, <code>placeholder</code></td></tr>
+          <tr><td><code>checkbox</code></td><td>Múltipla escolha</td><td>Nenhuma</td><td>Mesmo <code>name</code> para agrupar</td></tr>
+          <tr><td><code>radio</code></td><td>Escolha única</td><td>Nenhuma</td><td>Mesmo <code>name</code> para agrupar</td></tr>
+          <tr><td><code>submit</code></td><td>Botão de envio</td><td>—</td><td><code>value</code>, <code>formnovalidate</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3>🎮 Demonstração interativa</h3>
+      <p>Teste você mesmo cada type abaixo. Os campos não submetem nada — servem só para você experimentar o comportamento nativo.</p>
+
+      <div class="demo-form">
+        <label for="t-text">text — nome curto</label>
+        <input type="text" id="t-text" name="texto" placeholder="Texto de uma linha" maxlength="20">
+
+        <label for="t-pass">password — senha</label>
+        <input type="password" id="t-pass" name="senha" placeholder="••••••••">
+
+        <label for="t-email">email — endereço de e-mail</label>
+        <input type="email" id="t-email" name="email" placeholder="voce@exemplo.com" required>
+
+        <label for="t-num">number — número entre 1 e 100, passo 5</label>
+        <input type="number" id="t-num" name="numero" min="1" max="100" step="5" value="50">
+
+        <label for="t-range">range — entre 0 e 100</label>
+        <input type="range" id="t-range" name="intervalo" min="0" max="100" step="10" value="40">
+
+        <label for="t-date">date — data</label>
+        <input type="date" id="t-date" name="data" min="1950-01-01" max="2030-12-31">
+
+        <label for="t-time">time — horário</label>
+        <input type="time" id="t-time" name="horario">
+
+        <label for="t-color">color — seletor de cor</label>
+        <input type="color" id="t-color" name="cor" value="#0d9488">
+
+        <label for="t-url">url — endereço web</label>
+        <input type="url" id="t-url" name="site" placeholder="https://exemplo.com">
+
+        <label for="t-tel">tel — telefone</label>
+        <input type="tel" id="t-tel" name="telefone" placeholder="(11) 91234-5678">
+
+        <button type="button">Enviar</button>
+      </div>
+
+      <h3>🎯 Regras invariáveis dos types checkbox e radio</h3>
+      <div class="highlight-box rose">
+        <strong>🚨 Regra de ouro:</strong> em um grupo de <code>radio</code>, todos os inputs do grupo precisam ter <em>o mesmo <code>name</code></em>. Só assim o navegador trata como exclusivo — quando o usuário escolhe uma opção, as demais são desmarcadas automaticamente. Em <code>checkbox</code>, o mesmo <code>name</code> agrupa as opções para envio como array no servidor, mas o usuário pode escolher várias.
+      </div>
+
+      <div class="demo-form">
+        <label>Radio — só uma opção possível (todas com name="regiao")</label>
+        <div class="grupo-radio">
+          <label><input type="radio" name="regiao" value="sudeste" checked> Sudeste</label>
+          <label><input type="radio" name="regiao" value="sul"> Sul</label>
+          <label><input type="radio" name="regiao" value="nordeste"> Nordeste</label>
+          <label><input type="radio" name="regiao" value="norte"> Norte</label>
+        </div>
+
+        <label style="margin-top:16px;">Checkbox — múltipla escolha (todas com name="genero")</label>
+        <div class="grupo-radio">
+          <label><input type="checkbox" name="genero" value="acao"> Ação</label>
+          <label><input type="checkbox" name="genero" value="comedia"> Comédia</label>
+          <label><input type="checkbox" name="genero" value="terror"> Terror</label>
+        </div>
+
+        <button type="button">Enviar</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ABA 3 — VALIDAÇÃO -->
+  <div id="aba-validacao" class="tab-content">
+    <section class="card">
+      <h2>✅ Validação nativa da HTML5</h2>
+      <p>O HTML5 introduziu atributos que dão ao navegador a responsabilidade de checar o valor de um campo antes da submissão. Nenhuma linha de JavaScript é necessária para os casos comuns.</p>
+
+      <h3>🔧 Os atributos de validação mais usados</h3>
+      <table class="tabela-logica">
+        <thead>
+          <tr><th>Atributo</th><th>Efeito</th><th>Exemplo de uso</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>required</code></td><td>Campo obrigatório. Impede submissão se estiver vazio.</td><td><code>&lt;input type="email" required&gt;</code></td></tr>
+          <tr><td><code>minlength</code></td><td>Mínimo de caracteres.</td><td><code>&lt;input type="text" minlength="3"&gt;</code></td></tr>
+          <tr><td><code>maxlength</code></td><td>Máximo de caracteres.</td><td><code>&lt;input type="text" maxlength="20"&gt;</code></td></tr>
+          <tr><td><code>min</code></td><td>Valor mínimo para number, date, time, range.</td><td><code>&lt;input type="number" min="18"&gt;</code></td></tr>
+          <tr><td><code>max</code></td><td>Valor máximo para number, date, time, range.</td><td><code>&lt;input type="number" max="99"&gt;</code></td></tr>
+          <tr><td><code>step</code></td><td>Incremento do number e do range.</td><td><code>&lt;input type="number" step="5"&gt;</code></td></tr>
+          <tr><td><code>pattern</code></td><td>Expressão regular para validar o texto.</td><td><code>&lt;input type="tel" pattern="[0-9]{11}"&gt;</code></td></tr>
+          <tr><td><code>placeholder</code></td><td>Dica visível quando o campo está vazio. Não afeta o valor.</td><td><code>&lt;input placeholder="Digite seu nome"&gt;</code></td></tr>
+          <tr><td><code>autofocus</code></td><td>Foco automático ao carregar. Só um por página.</td><td><code>&lt;input autofocus&gt;</code></td></tr>
+          <tr><td><code>autocomplete</code></td><td>Sugestões do navegador ligadas ou desligadas.</td><td><code>&lt;input autocomplete="off"&gt;</code></td></tr>
+          <tr><td><code>multiple</code></td><td>Aceita vários valores (email, file).</td><td><code>&lt;input type="email" multiple&gt;</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3>🧪 Teste você mesmo</h3>
+      <p>Os campos abaixo têm validação nativa ativa. Clique em <strong>Enviar</strong> sem preencher para ver o navegador reclamar.</p>
+
+      <div class="demo-form">
+        <label for="v-nome">Nome (required, minlength=3, maxlength=20)</label>
+        <input type="text" id="v-nome" name="nome" required minlength="3" maxlength="20" placeholder="Mínimo 3 caracteres">
+
+        <label for="v-email">E-mail (required, type="email")</label>
+        <input type="email" id="v-email" name="email" required placeholder="voce@exemplo.com">
+
+        <label for="v-cpf">CPF (pattern de 11 dígitos)</label>
+        <input type="tel" id="v-cpf" name="cpf" pattern="[0-9]{11}" placeholder="11111111111" maxlength="11">
+
+        <label for="v-num">Idade (number, min=18, max=99, required)</label>
+        <input type="number" id="v-num" name="idade" min="18" max="99" required>
+
+        <button type="button" onclick="document.getElementById('v-nome').reportValidity();document.getElementById('v-email').reportValidity();document.getElementById('v-num').reportValidity();">Testar validação</button>
+      </div>
+
+      <div class="highlight-box amber">
+        <strong>⚠️ Limitação importante:</strong> a validação nativa do HTML5 é conveniência de UX, não segurança. Ela pode ser desativada removendo o atributo do DOM com o DevTools, ou enviando a requisição HTTP diretamente. A validação <em>definitiva</em> de dados acontece no servidor — no backend, não no navegador.
+      </div>
+    </section>
+  </div>
+
+  <!-- ABA 4 — COMPLEMENTOS -->
+  <div id="aba-complementos" class="tab-content">
+    <section class="card">
+      <h2>🧩 Elementos complementares ao formulário</h2>
+      <p>Além do <code>&lt;input&gt;</code>, um formulário completo usa estas tags: <code>&lt;label&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;button&gt;</code>, <code>&lt;fieldset&gt;</code> e <code>&lt;legend&gt;</code>. Todas fazem parte do vocabulário dos formulários HTML5.</p>
+
+      <h3>🏷️ <code>&lt;label&gt;</code> — o rótulo acessível</h3>
+      <p>Existem duas formas de associar um rótulo a um campo:</p>
+      <table class="tabela-logica">
+        <thead>
+          <tr><th>Forma</th><th>Código</th><th>Quando usar</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Explícita (envelopando)</td><td><code>&lt;label&gt;Nome &lt;input type="text"&gt;&lt;/label&gt;</code></td><td>Quando o texto é curto e cabe na mesma linha do input.</td></tr>
+          <tr><td>Por atributo for</td><td><code>&lt;label for="nome"&gt;Nome&lt;/label&gt;&lt;input id="nome"&gt;</code></td><td>Quando o layout separa o rótulo do campo. Essa é a forma recomendada.</td></tr>
+        </tbody>
+      </table>
+      <div class="highlight-box green">
+        <strong>✅ Por que importa:</strong> com <code>&lt;label for="id"&gt;</code>, o leitor de tela anuncia o campo como "Nome, caixa de edição" em vez de apenas "caixa de edição sem nome". Clicar no rótulo também foca o campo.
+      </div>
+
+      <h3>🔽 <code>&lt;select&gt;</code> e <code>&lt;textarea&gt;</code></h3>
+      <div class="demo-form">
+        <label for="c-estado">Estado (select / option)</label>
+        <select id="c-estado" name="estado">
+          <option value="">Selecione…</option>
+          <option value="SP">São Paulo</option>
+          <option value="RJ">Rio de Janeiro</option>
+          <option value="MG">Minas Gerais</option>
+          <option value="BA">Bahia</option>
+        </select>
+
+        <label for="c-msg">Mensagem (textarea, 5 linhas × 30 colunas)</label>
+        <textarea id="c-msg" name="mensagem" rows="5" cols="30" placeholder="Digite sua mensagem…"></textarea>
+
+        <button type="button">Enviar</button>
+      </div>
+
+      <h3>🔘 <code>&lt;button&gt;</code> — o botão que faz a submissão</h3>
+      <table class="tabela-logica">
+        <thead>
+          <tr><th>type</th><th>Comportamento</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>submit</code></td><td>Envia o formulário. É o padrão se você não especificar nada.</td></tr>
+          <tr><td><code>reset</code></td><td>Devolve todos os campos ao valor inicial.</td></tr>
+          <tr><td><code>button</code></td><td>Botão genérico. Só funciona com JavaScript associado.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>🧩 <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> — agrupamento acessível</h3>
+      <p>Para grupos de campos relacionados (dados pessoais, endereço, gênero), envolva-os em <code>&lt;fieldset&gt;</code> e dê um título com <code>&lt;legend&gt;</code>. O leitor de tela anuncia o título do grupo ao entrar nele.</p>
+
+      <div class="code-wrapper">
+        <div class="code-header">
+          <span class="code-title">fieldset-legend.html</span>
+          <div class="code-actions">
+            <button type="button" class="copy-btn" data-copiar="fieldset">📋 Copiar</button>
+            <button type="button" class="run-inline-btn" data-preview="fieldset">🧪 Preview</button>
+          </div>
+        </div>
+        <div class="code-pane"><pre id="codigo-fieldset"></pre></div>
+      </div>
+      <div id="preview-fieldset"></div>
+
+      <h3>🖼️ Multimídia: <code>&lt;object&gt;</code>, <code>&lt;iframe&gt;</code>, <code>&lt;embed&gt;</code></h3>
+      <table class="tabela-logica">
+        <thead>
+          <tr><th>Tag</th><th>Uso típico</th><th>Atributos essenciais</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>&lt;object&gt;</code></td><td>PDF, SVG, vídeo, documento externo</td><td><code>data</code>, <code>type</code>, <code>width</code>, <code>height</code></td></tr>
+          <tr><td><code>&lt;iframe&gt;</code></td><td>Página externa ou conteúdo embutido (mapa, vídeo do YouTube)</td><td><code>src</code>, <code>width</code>, <code>height</code>, <code>title</code>, <code>sandbox</code></td></tr>
+          <tr><td><code>&lt;embed&gt;</code></td><td>Plugins antigos (Flash, etc). Depreciado para a maioria dos usos modernos.</td><td><code>src</code>, <code>type</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- ABA 5 — LABS -->
+  <div id="aba-labs" class="tab-content">
+    <section class="card">
+      <h2>💻 Laboratórios executáveis</h2>
+      <p>Cinco projetos completos. Cada um é um arquivo único, executável no OneCompiler ou disponível para download.</p>
+
+      <h3>📝 Lab 1 — Cadastro básico</h3>
+      <div class="code-wrapper" id="card-lab1">
+        <div class="code-header">
+          <span class="code-title">lab1-cadastro-basico.html</span>
+          <div class="code-actions">
+            <button type="button" class="copy-btn" data-copiar-lab="lab1">📋 Copiar</button>
+            <button type="button" class="run-inline-btn" data-preview-lab="lab1">🧪 Preview</button>
+            <button type="button" class="run-oc-btn" data-oc-lab="lab1">▶️ OneCompiler</button>
+            <button type="button" class="download-btn" data-download-lab="lab1">⬇️ Baixar</button>
+          </div>
+        </div>
+        <div class="code-pane"><pre id="lab1-codigo"></pre></div>
+      </div>
+      <div id="lab1-preview"></div>
+
+      <h3>📊 Lab 2 — Pesquisa com radio e checkbox</h3>
+      <div class="code-wrapper" id="card-lab2">
+        <div class="code-header">
+          <span class="code-title">lab2-pesquisa.html</span>
+          <div class="code-actions">
+            <button type="button" class="copy-btn" data-copiar-lab="lab2">📋 Copiar</button>
+            <button type="button" class="run-inline-btn" data-preview-lab="lab2">🧪 Preview</button>
+            <button type="button" class="run-oc-btn" data-oc-lab="lab2">▶️ OneCompiler</button>
+            <button type="button" class="download-btn" data-download-lab="lab2">⬇️ Baixar</button>
+          </div>
+        </div>
+        <div class="code-pane"><pre id="lab2-codigo"></pre></div>
+      </div>
+      <div id="lab2-preview"></div>
+
+      <h3>📅 Lab 3 — Agendamento com date e time</h3>
+      <div class="code-wrapper" id="card-lab3">
+        <div class="code-header">
+          <span class="code-title">lab3-agendamento.html</span>
+          <div class="code-actions">
+            <button type="button" class="copy-btn" data-copiar-lab="lab3">📋 Copiar</button>
+            <button type="button" class="run-inline-btn" data-preview-lab="lab3">🧪 Preview</button>
+            <button type="button" class="run-oc-btn" data-oc-lab="lab3">▶️ OneCompiler</button>
+            <button type="button" class="download-btn" data-download-lab="lab3">⬇️ Baixar</button>
+          </div>
+        </div>
+        <div class="code-pane"><pre id="lab3-codigo"></pre></div>
+      </div>
+      <div id="lab3-preview"></div>
+
+      <h3>🛒 Lab 4 — Pedido com select e textarea</h3>
+      <div class="code-wrapper" id="card-lab4">
+        <div class="code-header">
+          <span class="code-title">lab4-pedido.html</span>
+          <div class="code-actions">
+            <button type="button" class="copy-btn" data-copiar-lab="lab4">📋 Copiar</button>
+            <button type="button" class="run-inline-btn" data-preview-lab="lab4">🧪 Preview</button>
+            <button type="button" class="run-oc-btn" data-oc-lab="lab4">▶️ OneCompiler</button>
+            <button type="button" class="download-btn" data-download-lab="lab4">⬇️ Baixar</button>
+          </div>
+        </div>
+        <div class="code-pane"><pre id="lab4-codigo"></pre></div>
+      </div>
+      <div id="lab4-preview"></div>
+
+      <h3>🔐 Lab 5 — Login acessível com fieldset</h3>
+      <div class="code-wrapper" id="card-lab5">
+        <div class="code-header">
+          <span class="code-title">lab5-login-acessivel.html</span>
+          <div class="code-actions">
+            <button type="button" class="copy-btn" data-copiar-lab="lab5">📋 Copiar</button>
+            <button type="button" class="run-inline-btn" data-preview-lab="lab5">🧪 Preview</button>
+            <button type="button" class="run-oc-btn" data-oc-lab="lab5">▶️ OneCompiler</button>
+            <button type="button" class="download-btn" data-download-lab="lab5">⬇️ Baixar</button>
+          </div>
+        </div>
+        <div class="code-pane"><pre id="lab5-codigo"></pre></div>
+      </div>
+      <div id="lab5-preview"></div>
+    </section>
+  </div>
+
+  <!-- ABA 6 — ACESSIBILIDADE -->
+  <div id="aba-a11y" class="tab-content">
+    <section class="card">
+      <h2>♿ Acessibilidade do formulário — a mesma lógica do Tema 04</h2>
+      <p>Formulários são mais sensíveis à acessibilidade do que tabelas, porque cada campo é interativo e precisa de três informações: <strong>nome</strong>, <strong>papel</strong> e <strong>estado</strong>. Quando falta qualquer uma, o usuário de leitor de tela não consegue usar o formulário.</p>
+
+      <h3>🌳 Árvore de acessibilidade — formulário bem rotulado</h3>
+      <div class="arvore-wrap">
+        <div class="arvore-linha"><span class="arvore-tipo tipo-root">RootWebArea</span> "Cadastro"</div>
+        <div class="arvore-linha">  <span class="arvore-tipo tipo-form">form</span> ""</div>
+        <div class="arvore-linha">    <span class="arvore-tipo tipo-textbox">textbox</span> "Nome" <span class="arvore-badge-diferenca badge-bom">nome acessível</span></div>
+        <div class="arvore-linha">      <span class="arvore-tipo tipo-static">StaticText</span> "Nome"</div>
+        <div class="arvore-linha">    <span class="arvore-tipo tipo-textbox">textbox</span> "E-mail" <span class="arvore-badge-diferenca badge-bom">nome acessível</span></div>
+        <div class="arvore-linha">    <span class="arvore-tipo tipo-checkbox">checkbox</span> "Lembrar-me" <span class="arvore-badge-diferenca badge-bom">nome acessível</span></div>
+        <div class="arvore-linha">    <span class="arvore-tipo tipo-button">button</span> "Enviar"</div>
+      </div>
+
+      <h3>🌳 Árvore de acessibilidade — formulário sem rótulo</h3>
+      <div class="arvore-wrap">
+        <div class="arvore-linha"><span class="arvore-tipo tipo-root">RootWebArea</span> "Cadastro"</div>
+        <div class="arvore-linha">  <span class="arvore-tipo tipo-form">form</span> ""</div>
+        <div class="arvore-linha">    <span class="arvore-tipo tipo-textbox">textbox</span> "" <span class="arvore-badge-diferenca badge-ruim">sem nome</span></div>
+        <div class="arvore-linha">    <span class="arvore-tipo tipo-textbox">textbox</span> "" <span class="arvore-badge-diferenca badge-ruim">sem nome</span></div>
+        <div class="arvore-linha">    <span class="arvore-tipo tipo-checkbox">checkbox</span> "" <span class="arvore-badge-diferenca badge-ruim">sem nome</span></div>
+        <div class="arvore-linha">    <span class="arvore-tipo tipo-button">button</span> "Enviar"</div>
+      </div>
+
+      <div class="highlight-box rose">
+        <strong>🚨 O impacto real:</strong> no primeiro caso, o leitor de tela anuncia "Nome, caixa de edição" e o usuário sabe o que preencher. No segundo, anuncia apenas "caixa de edição" — o usuário cego não faz ideia de qual dado o campo espera. Sem nome, o formulário é inutilizável.
+      </div>
+
+      <h3>💻 Conferir no Chrome</h3>
+      <div class="passos-container">
+        <div class="passo-item">
+          <div class="passo-numero">1</div>
+          <div class="passo-conteudo">
+            <strong>Inspecione o input</strong>
+            <p>Abra o formulário no Chrome, pressione <span class="atalho">F12</span>, vá em <strong>Elements</strong>, clique no elemento <code>&lt;input&gt;</code>.</p>
+          </div>
+        </div>
+        <div class="passo-item">
+          <div class="passo-numero">2</div>
+          <div class="passo-conteudo">
+            <strong>Abra a aba Accessibility</strong>
+            <p>Se a aba não estiver visível, clique em <span class="atalho">&gt;&gt;</span> no topo do DevTools para revelar as abas ocultas.</p>
+          </div>
+        </div>
+        <div class="passo-item">
+          <div class="passo-numero">3</div>
+          <div class="passo-conteudo">
+            <strong>Verifique o campo Name</strong>
+            <p>No bloco <strong>Computed Properties</strong>, olhe o valor de <code>Name</code>. Se for o texto do <code>&lt;label&gt;</code>, o campo está acessível. Se estiver vazio, o input não tem rótulo associado.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>📊 Checagens obrigatórias</h3>
+      <table class="tabela-logica">
+        <thead>
+          <tr><th>Requisito</th><th>Como cumprir</th><th>Por quê</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Todo input tem nome acessível</td><td><code>&lt;label for="id"&gt;</code> + input com o mesmo <code>id</code></td><td>Sem nome, o leitor anuncia só o papel.</td></tr>
+          <tr><td>Grupos de radio/checkbox têm título</td><td><code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code></td><td>O usuário entende a que pergunta o grupo responde.</td></tr>
+          <tr><td>Campo obrigatório é declarado</td><td><code>required</code> + indicação visual com asterisco</td><td>Validação nativa e expectativa clara.</td></tr>
+          <tr><td>Mensagens de erro são anunciadas</td><td>Validação nativa do navegador; JS só se necessário</td><td>O usuário entende por que o envio falhou.</td></tr>
+          <tr><td>Botão tem texto descritivo</td><td><code>&lt;button type="submit"&gt;Enviar&lt;/button&gt;</code></td><td>"Enviar" é lido como "Enviar, botão".</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- ABA 7 — QUIZ -->
+  <div id="aba-quiz" class="tab-content">
+    <section class="card">
+      <h2>📝 Avaliação — 18 questões com feedback imediato</h2>
+      <p>Responda com calma. Ao final, você gera o relatório completo e pode salvar em PDF.</p>
+
+      <div class="quiz-header">
+        <span class="progresso-texto">Progresso: <strong id="txtProgresso">0 de 18</strong></span>
+        <div class="barra-fundo"><div class="barra-preenchimento" id="fillProgresso"></div></div>
+      </div>
+
+      <div id="containerQuestoes"></div>
+
+      <div class="btn-grupo">
+        <button type="button" class="btn" id="btnFinalizar" disabled>✅ Finalizar e ver relatório</button>
+        <button type="button" class="btn btn-secondary" id="btnLimpar">🔄 Limpar respostas</button>
+      </div>
+
+      <div class="results" id="resultados">
+        <h4>📊 Relatório</h4>
+        <div id="listaGabarito"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer style="text-align:center;color:#94a3b8;font-size:.78rem;padding:22px 0;">
+    📋 Disciplina: Programação Front-End &bull; Tema 05: Formulários HTML &bull; 2026
+  </footer>
+</div>
+
+<div class="toast-notificacao" id="toastNotificacao">✅ Feito!</div>
+<button type="button" class="btn-top" id="btnTopo">⬆️ Topo</button>
+
+<script>
+/* ============================================================
+   ESCAPE
+   ============================================================ */
+function esc(t) {
+  return String(t == null ? '' : t)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/* ============================================================
+   CÓDIGOS EXEMPLOS
+   ============================================================ */
+var CODIGO_ANATOMIA = '<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <title>Formulário de contato</title>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <form action="https://httpbin.org/post" method="post" autocomplete="on">\n' +
+'    <label for="nome">Nome</label>\n' +
+'    <input type="text" id="nome" name="nome" required>\n' +
+'\n' +
+'    <label for="email">E-mail</label>\n' +
+'    <input type="email" id="email" name="email" required>\n' +
+'\n' +
+'    <label for="msg">Mensagem</label>\n' +
+'    <textarea id="msg" name="mensagem" rows="4" cols="30"></textarea>\n' +
+'\n' +
+'    <button type="submit">Enviar</button>\n' +
+'  </form>\n' +
+'</body>\n' +
+'</html>';
+
+var CODIGO_FIELDSET = '<form action="https://httpbin.org/post" method="post">\n' +
+'  <fieldset>\n' +
+'    <legend>Dados pessoais</legend>\n' +
+'\n' +
+'    <label for="nome">Nome</label>\n' +
+'    <input type="text" id="nome" name="nome" required>\n' +
+'\n' +
+'    <label for="nasc">Data de nascimento</label>\n' +
+'    <input type="date" id="nasc" name="nascimento">\n' +
+'  </fieldset>\n' +
+'\n' +
+'  <fieldset>\n' +
+'    <legend>Preferência de contato</legend>\n' +
+'\n' +
+'    <label>\n' +
+'      <input type="radio" name="contato" value="email" checked> E-mail\n' +
+'    </label>\n' +
+'    <label>\n' +
+'      <input type="radio" name="contato" value="telefone"> Telefone\n' +
+'    </label>\n' +
+'  </fieldset>\n' +
+'\n' +
+'  <button type="submit">Enviar</button>\n' +
+'</form>';
+
+/* ============================================================
+   LABS
+   ============================================================ */
+var LABS = {
+  lab1: {
+    nome: 'lab1-cadastro-basico.html',
+    codigo: '<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+'  <title>Cadastro básico</title>\n' +
+'  <style>\n' +
+'    body { font-family: Arial, sans-serif; padding: 24px; background: #f8fafc; }\n' +
+'    form { max-width: 420px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.08); }\n' +
+'    h1 { color: #0c4a6e; font-size: 1.3rem; margin-bottom: 18px; }\n' +
+'    label { display: block; font-weight: 700; font-size: .85rem; color: #334155; margin-top: 12px; margin-bottom: 4px; }\n' +
+'    input { width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: .92rem; box-sizing: border-box; }\n' +
+'    input:focus { outline: none; border-color: #0d9488; box-shadow: 0 0 0 3px rgba(13,148,136,.16); }\n' +
+'    button { width: 100%; margin-top: 20px; padding: 11px; background: #0d9488; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: .95rem; cursor: pointer; }\n' +
+'    button:hover { background: #0f766e; }\n' +
+'  </style>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <form action="https://httpbin.org/post" method="post">\n' +
+'    <h1>Cadastro de usuário</h1>\n' +
+'\n' +
+'    <label for="nome">Nome completo</label>\n' +
+'    <input type="text" id="nome" name="nome" required minlength="3" maxlength="80" placeholder="Digite seu nome">\n' +
+'\n' +
+'    <label for="email">E-mail</label>\n' +
+'    <input type="email" id="email" name="email" required placeholder="voce@exemplo.com">\n' +
+'\n' +
+'    <label for="senha">Senha</label>\n' +
+'    <input type="password" id="senha" name="senha" required minlength="8" placeholder="Mínimo 8 caracteres">\n' +
+'\n' +
+'    <label for="nasc">Data de nascimento</label>\n' +
+'    <input type="date" id="nasc" name="nascimento" required min="1900-01-01" max="2020-12-31">\n' +
+'\n' +
+'    <button type="submit">Criar conta</button>\n' +
+'  </form>\n' +
+'</body>\n' +
+'</html>'
+  },
+  lab2: {
+    nome: 'lab2-pesquisa.html',
+    codigo: '<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+'  <title>Pesquisa de satisfação</title>\n' +
+'  <style>\n' +
+'    body { font-family: Arial, sans-serif; padding: 24px; background: #f8fafc; }\n' +
+'    form { max-width: 480px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.08); }\n' +
+'    h1 { color: #0c4a6e; font-size: 1.3rem; margin-bottom: 18px; }\n' +
+'    fieldset { border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }\n' +
+'    legend { font-weight: 700; color: #334155; font-size: .88rem; padding: 0 6px; }\n' +
+'    label { display: block; color: #334155; font-size: .9rem; margin-top: 6px; }\n' +
+'    input[type="radio"], input[type="checkbox"] { margin-right: 6px; accent-color: #0d9488; }\n' +
+'    button { width: 100%; margin-top: 16px; padding: 11px; background: #0d9488; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: .95rem; cursor: pointer; }\n' +
+'  </style>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <form action="https://httpbin.org/post" method="post">\n' +
+'    <h1>Pesquisa de satisfação</h1>\n' +
+'\n' +
+'    <fieldset>\n' +
+'      <legend>Como você nos conheceu?</legend>\n' +
+'      <label><input type="radio" name="origem" value="indicacao" checked> Indicação de amigo</label>\n' +
+'      <label><input type="radio" name="origem" value="google"> Busca no Google</label>\n' +
+'      <label><input type="radio" name="origem" value="redes"> Redes sociais</label>\n' +
+'    </fieldset>\n' +
+'\n' +
+'    <fieldset>\n' +
+'      <legend>Quais assuntos te interessam?</legend>\n' +
+'      <label><input type="checkbox" name="interesses" value="html"> HTML</label>\n' +
+'      <label><input type="checkbox" name="interesses" value="css"> CSS</label>\n' +
+'      <label><input type="checkbox" name="interesses" value="js"> JavaScript</label>\n' +
+'      <label><input type="checkbox" name="interesses" value="acessibilidade"> Acessibilidade</label>\n' +
+'    </fieldset>\n' +
+'\n' +
+'    <button type="submit">Enviar respostas</button>\n' +
+'  </form>\n' +
+'</body>\n' +
+'</html>'
+  },
+  lab3: {
+    nome: 'lab3-agendamento.html',
+    codigo: '<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+'  <title>Agendamento</title>\n' +
+'  <style>\n' +
+'    body { font-family: Arial, sans-serif; padding: 24px; background: #f8fafc; }\n' +
+'    form { max-width: 440px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.08); }\n' +
+'    h1 { color: #0c4a6e; font-size: 1.3rem; margin-bottom: 18px; }\n' +
+'    label { display: block; font-weight: 700; font-size: .85rem; color: #334155; margin-top: 12px; margin-bottom: 4px; }\n' +
+'    input, select { width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: .92rem; box-sizing: border-box; }\n' +
+'    button { width: 100%; margin-top: 20px; padding: 11px; background: #0d9488; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }\n' +
+'  </style>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <form action="https://httpbin.org/post" method="post">\n' +
+'    <h1>Agendar consulta</h1>\n' +
+'\n' +
+'    <label for="nome">Nome</label>\n' +
+'    <input type="text" id="nome" name="nome" required>\n' +
+'\n' +
+'    <label for="tel">Telefone</label>\n' +
+'    <input type="tel" id="tel" name="telefone" pattern="[0-9]{10,11}" placeholder="11999990000" required>\n' +
+'\n' +
+'    <label for="data">Data</label>\n' +
+'    <input type="date" id="data" name="data" required min="2026-01-01">\n' +
+'\n' +
+'    <label for="hora">Horário</label>\n' +
+'    <input type="time" id="hora" name="horario" required>\n' +
+'\n' +
+'    <button type="submit">Confirmar</button>\n' +
+'  </form>\n' +
+'</body>\n' +
+'</html>'
+  },
+  lab4: {
+    nome: 'lab4-pedido.html',
+    codigo: '<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+'  <title>Pedido</title>\n' +
+'  <style>\n' +
+'    body { font-family: Arial, sans-serif; padding: 24px; background: #f8fafc; }\n' +
+'    form { max-width: 480px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.08); }\n' +
+'    h1 { color: #0c4a6e; font-size: 1.3rem; margin-bottom: 18px; }\n' +
+'    label { display: block; font-weight: 700; font-size: .85rem; color: #334155; margin-top: 12px; margin-bottom: 4px; }\n' +
+'    input, select, textarea { width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: .92rem; box-sizing: border-box; }\n' +
+'    textarea { resize: vertical; }\n' +
+'    button { width: 100%; margin-top: 20px; padding: 11px; background: #0d9488; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }\n' +
+'  </style>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <form action="https://httpbin.org/post" method="post">\n' +
+'    <h1>Fazer pedido</h1>\n' +
+'\n' +
+'    <label for="produto">Produto</label>\n' +
+'    <select id="produto" name="produto" required>\n' +
+'      <option value="">Selecione…</option>\n' +
+'      <option value="teclado">Teclado mecânico</option>\n' +
+'      <option value="mouse">Mouse gamer</option>\n' +
+'      <option value="headset">Headset</option>\n' +
+'    </select>\n' +
+'\n' +
+'    <label for="qtd">Quantidade</label>\n' +
+'    <input type="number" id="qtd" name="quantidade" min="1" max="99" step="1" value="1" required>\n' +
+'\n' +
+'    <label for="obs">Observações</label>\n' +
+'    <textarea id="obs" name="observacoes" rows="4" cols="30" placeholder="Instruções adicionais…"></textarea>\n' +
+'\n' +
+'    <button type="submit">Enviar pedido</button>\n' +
+'  </form>\n' +
+'</body>\n' +
+'</html>'
+  },
+  lab5: {
+    nome: 'lab5-login-acessivel.html',
+    codigo: '<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+'  <title>Login acessível</title>\n' +
+'  <style>\n' +
+'    body { font-family: Arial, sans-serif; padding: 24px; background: #f8fafc; }\n' +
+'    form { max-width: 380px; margin: 0 auto; background: #fff; padding: 28px; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.08); }\n' +
+'    h1 { color: #0c4a6e; font-size: 1.3rem; margin-bottom: 8px; }\n' +
+'    p.sub { color: #64748b; font-size: .82rem; margin-bottom: 18px; }\n' +
+'    fieldset { border: none; padding: 0; margin: 0 0 16px 0; }\n' +
+'    legend { font-size: .8rem; font-weight: 700; color: #0c4a6e; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }\n' +
+'    label { display: block; font-weight: 700; font-size: .85rem; color: #334155; margin-bottom: 4px; }\n' +
+'    input { width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: .92rem; box-sizing: border-box; margin-bottom: 12px; }\n' +
+'    label.check { display: flex; align-items: center; gap: 8px; font-weight: 500; margin-bottom: 0; }\n' +
+'    input[type="checkbox"] { width: auto; margin: 0; accent-color: #0d9488; }\n' +
+'    button { width: 100%; padding: 11px; background: #0d9488; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 16px; }\n' +
+'  </style>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <form action="https://httpbin.org/post" method="post" autocomplete="on">\n' +
+'    <h1>Entrar</h1>\n' +
+'    <p class="sub">Acesse sua conta com e-mail e senha.</p>\n' +
+'\n' +
+'    <fieldset>\n' +
+'      <legend>Credenciais</legend>\n' +
+'\n' +
+'      <label for="email">E-mail</label>\n' +
+'      <input type="email" id="email" name="email" required autocomplete="username" placeholder="voce@exemplo.com">\n' +
+'\n' +
+'      <label for="senha">Senha</label>\n' +
+'      <input type="password" id="senha" name="senha" required minlength="8" autocomplete="current-password">\n' +
+'    </fieldset>\n' +
+'\n' +
+'    <fieldset>\n' +
+'      <legend>Opções</legend>\n' +
+'      <label class="check" for="lembrar">\n' +
+'        <input type="checkbox" id="lembrar" name="lembrar" value="sim">\n' +
+'        Lembrar-me neste dispositivo\n' +
+'      </label>\n' +
+'    </fieldset>\n' +
+'\n' +
+'    <button type="submit">Entrar</button>\n' +
+'  </form>\n' +
+'</body>\n' +
+'</html>'
+  }
+};
+
+/* ============================================================
+   QUESTÕES
+   ============================================================ */
+var QUESTOES = [
+  {
+    pergunta: 'Qual é a função do atributo <code>action</code> na tag <code>&lt;form&gt;</code>?',
+    opcoes: [
+      { l:'a', t:'Define a aparência CSS do formulário.' },
+      { l:'b', t:'Indica a URL para onde os dados serão enviados.' },
+      { l:'c', t:'Define o idioma das mensagens de erro.' },
+      { l:'d', t:'Bloqueia o envio de dados inválidos.' }
+    ],
+    correta:'b',
+    explicacao:'action é a URL de destino. Se omitido, os dados são enviados para a própria página.'
+  },
+  {
+    pergunta: 'Qual a diferença entre <code>method="get"</code> e <code>method="post"</code>?',
+    opcoes: [
+      { l:'a', t:'GET é mais rápido que POST.' },
+      { l:'b', t:'GET envia dados na URL (visíveis); POST envia no corpo da requisição (invisíveis).' },
+      { l:'c', t:'GET não funciona em Chrome; POST sim.' },
+      { l:'d', t:'GET criptografa os dados automaticamente.' }
+    ],
+    correta:'b',
+    explicacao:'Por isso POST é obrigatório para senhas. GET expõe os dados na barra de endereço.'
+  },
+  {
+    pergunta: 'Qual é o atributo que faz o preenchimento automático do navegador ser desativado?',
+    opcoes: [
+      { l:'a', t:'autocomplete="off"' },
+      { l:'b', t:'autofill="off"' },
+      { l:'c', t:'suggest="off"' },
+      { l:'d', t:'fill="none"' }
+    ],
+    correta:'a',
+    explicacao:'autocomplete="off" desliga a sugestão do navegador no campo ou no formulário inteiro.'
+  },
+  {
+    pergunta: 'Um input de texto sem o atributo <code>name</code> — o que acontece ao submeter?',
+    opcoes: [
+      { l:'a', t:'O campo é enviado normalmente, com nome automático.' },
+      { l:'b', t:'O navegador bloqueia o envio.' },
+      { l:'c', t:'O valor do campo NÃO é enviado ao servidor.' },
+      { l:'d', t:'O campo é convertido em type="hidden".' }
+    ],
+    correta:'c',
+    explicacao:'Sem name, o dado não tem chave para chegar ao servidor. name é a identificação do campo no envio.'
+  },
+  {
+    pergunta: 'Qual destes <code>type</code> aceita apenas uma linha de texto curto, sem validação nativa?',
+    opcoes: [
+      { l:'a', t:'text' },
+      { l:'b', t:'email' },
+      { l:'c', t:'date' },
+      { l:'d', t:'number' }
+    ],
+    correta:'a',
+    explicacao:'type="text" é o campo livre básico. email, date e number têm validação nativa.'
+  },
+  {
+    pergunta: 'Em um grupo de inputs do tipo <code>radio</code>, o que garante que apenas uma opção seja escolhida?',
+    opcoes: [
+      { l:'a', t:'Todos terem o mesmo atributo name.' },
+      { l:'b', t:'Todos terem o mesmo id.' },
+      { l:'c', t:'Todos estarem dentro de <fieldset>.' },
+      { l:'d', t:'Todos terem type="single".' }
+    ],
+    correta:'a',
+    explicacao:'O name agrupa. Sem name igual, o navegador trata como grupos independentes e permite várias seleções.'
+  },
+  {
+    pergunta: 'Qual é a diferença entre <code>radio</code> e <code>checkbox</code>?',
+    opcoes: [
+      { l:'a', t:'Radio é para cor, checkbox para texto.' },
+      { l:'b', t:'Radio permite apenas uma escolha por grupo; checkbox permite várias.' },
+      { l:'c', t:'Radio é mais moderno que checkbox.' },
+      { l:'d', t:'Checkbox só funciona em formulários POST.' }
+    ],
+    correta:'b',
+    explicacao:'A distinção é de exclusividade. Checkbox = múltipla escolha. Radio = escolha única.'
+  },
+  {
+    pergunta: 'Qual atributo bloqueia o envio do formulário se o campo estiver vazio?',
+    opcoes: [
+      { l:'a', t:'pattern="required"' },
+      { l:'b', t:'validate="true"' },
+      { l:'c', t:'required' },
+      { l:'d', t:'mandatory="yes"' }
+    ],
+    correta:'c',
+    explicacao:'required é atributo booleano nativo da HTML5. A validação é feita pelo navegador sem JS.'
+  },
+  {
+    pergunta: 'Qual atributo limita a quantidade máxima de caracteres em um campo de texto?',
+    opcoes: [
+      { l:'a', t:'max="20"' },
+      { l:'b', t:'limit="20"' },
+      { l:'c', t:'length="20"' },
+      { l:'d', t:'maxlength="20"' }
+    ],
+    correta:'d',
+    explicacao:'maxlength para strings; max é para valores numéricos, datas ou intervalos (range).'
+  },
+  {
+    pergunta: 'Em <code>type="number"</code>, qual atributo define o incremento dos botões de mais e menos?',
+    opcoes: [
+      { l:'a', t:'step' },
+      { l:'b', t:'unit' },
+      { l:'c', t:'rate' },
+      { l:'d', t:'inc' }
+    ],
+    correta:'a',
+    explicacao:'step="5" faz o campo saltar de 5 em 5. Padrão é 1.'
+  },
+  {
+    pergunta: 'O que acontece se eu colocar <code>type="date"</code> e o navegador não reconhecer?',
+    opcoes: [
+      { l:'a', t:'A página não carrega.' },
+      { l:'b', t:'O campo se transforma em type="text" (texto livre).' },
+      { l:'c', t:'O campo desaparece.' },
+      { l:'d', t:'O campo bloqueia o envio.' }
+    ],
+    correta:'b',
+    explicacao:'Compatibilidade retroativa: navegador antigo que não conhece o type renderiza como text.'
+  },
+  {
+    pergunta: 'A que tipo de dado se destinam os campos <code>type="email"</code> e <code>type="url"</code> respectivamente?',
+    opcoes: [
+      { l:'a', t:'A endereços de e-mail e URLs web, ambos com validação de formato nativa.' },
+      { l:'b', t:'A usuário e senha.' },
+      { l:'c', t:'A telefone e CEP.' },
+      { l:'d', t:'A qualquer texto, com filtro depois via JS.' }
+    ],
+    correta:'a',
+    explicacao:'Ambos validam formato nativamente. O usuário vê mensagem clara do próprio navegador.'
+  },
+  {
+    pergunta: 'Para permitir que um campo <code>type="email"</code> aceite vários endereços separados por vírgula, qual atributo usar?',
+    opcoes: [
+      { l:'a', t:'many="yes"' },
+      { l:'b', t:'list="email"' },
+      { l:'c', t:'multiple' },
+      { l:'d', t:'array="true"' }
+    ],
+    correta:'c',
+    explicacao:'multiple habilita múltiplos valores. No e-mail, os endereços devem ser separados por vírgula.'
+  },
+  {
+    pergunta: 'Qual é a tag correta para criar um rótulo associado a um input de forma acessível?',
+    opcoes: [
+      { l:'a', t:'<span>' },
+      { l:'b', t:'<label for="id-do-input">Texto</label>' },
+      { l:'c', t:'<caption>' },
+      { l:'d', t:'<legend>' }
+    ],
+    correta:'b',
+    explicacao:'O for do label aponta para o id do input. É o que o leitor de tela usa para anunciar o nome do campo.'
+  },
+  {
+    pergunta: 'O que o <code>&lt;fieldset&gt;</code> combinado com <code>&lt;legend&gt;</code> faz em termos de acessibilidade?',
+    opcoes: [
+      { l:'a', t:'Cria uma borda visual em volta do campo.' },
+      { l:'b', t:'Agrupa campos relacionados e anuncia o título do grupo ao leitor de tela.' },
+      { l:'c', t:'Faz a validação dos campos do grupo.' },
+      { l:'d', t:'Automatiza o envio por grupo.' }
+    ],
+    correta:'b',
+    explicacao:'Fieldset é o grupo; legend é o título do grupo. Leitores de tela anunciam o título ao usuário entrar no grupo.'
+  },
+  {
+    pergunta: 'Em um formulário com <code>&lt;select&gt;</code>, qual tag envolve cada opção individual?',
+    opcoes: [
+      { l:'a', t:'<option>' },
+      { l:'b', t:'<item>' },
+      { l:'c', t:'<choice>' },
+      { l:'d', t:'<select-item>' }
+    ],
+    correta:'a',
+    explicacao:'A estrutura é <select><option value="...">Texto</option></select>.'
+  },
+  {
+    pergunta: 'Qual é a diferença entre <code>&lt;input type="text"&gt;</code> e <code>&lt;textarea&gt;</code>?',
+    opcoes: [
+      { l:'a', t:'Input aceita múltiplas linhas; textarea só uma.' },
+      { l:'b', t:'Textarea aceita múltiplas linhas com rows e cols; input aceita apenas uma linha curta.' },
+      { l:'c', t:'Textarea é só para upload de arquivo.' },
+      { l:'d', t:'Input só funciona em POST.' }
+    ],
+    correta:'b',
+    explicacao:'textarea é para texto longo, com rows e cols controlando altura e largura iniciais.'
+  },
+  {
+    pergunta: 'A validação nativa do HTML5 (required, pattern, min, max) é suficiente para segurança dos dados no servidor?',
+    opcoes: [
+      { l:'a', t:'Sim, é criptografada pelo navegador automaticamente.' },
+      { l:'b', t:'Sim, desde que o formulário seja method="post".' },
+      { l:'c', t:'Não. Ela pode ser burlada removendo atributos no DevTools ou enviando HTTP direto. O servidor deve validar novamente.' },
+      { l:'d', t:'Sim, desde que o campo tenha name.' }
+    ],
+    correta:'c',
+    explicacao:'Validação nativa é conveniência de UX. Segurança de dados é responsabilidade do servidor.'
+  }
+];
+
+/* ============================================================
+   MONTAGEM DAS ABAS + COPY/PRINT
+   ============================================================ */
+function trocarAba(id, botao) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+  botao.classList.add('active');
+  var alvo = document.getElementById(id);
+  if (alvo) alvo.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function montarCodigosFixos() {
+  var a = document.getElementById('codigo-anatomia');
+  if (a) a.textContent = CODIGO_ANATOMIA;
+  var f = document.getElementById('codigo-fieldset');
+  if (f) f.textContent = CODIGO_FIELDSET;
+}
+
+function montarLabs() {
+  Object.keys(LABS).forEach(function(k){
+    var pre = document.getElementById(k + '-codigo');
+    if (pre) pre.textContent = LABS[k].codigo;
+  });
+}
+
+/* ============================================================
+   COPIAR / PREVIEW / ONECOMPILER / DOWNLOAD
+   ============================================================ */
+function copiarFallback(texto) {
+  var area = document.createElement('textarea');
+  area.value = texto;
+  area.setAttribute('readonly', '');
+  area.style.position = 'fixed';
+  area.style.top = '-1000px';
+  document.body.appendChild(area);
+  area.select();
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  document.body.removeChild(area);
+  return ok;
+}
+
+function copiarTexto(texto, botao) {
+  if (!texto) return;
+  var fim = function(sucesso) {
+    if (sucesso) {
+      mostrarToast('✅ Copiado!');
+      if (botao) {
+        var orig = botao.textContent;
+        botao.textContent = '✅ Copiado!';
+        setTimeout(function(){ botao.textContent = orig; }, 1600);
+      }
+    } else {
+      mostrarToast('⚠️ Selecione e copie manualmente.');
+    }
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(texto).then(function(){ fim(true); }).catch(function(){ fim(copiarFallback(texto)); });
+  } else {
+    fim(copiarFallback(texto));
+  }
+}
+
+function abrirPreview(html, targetId) {
+  var alvo = document.getElementById(targetId);
+  if (!alvo) return;
+  var anterior = alvo.querySelector('.preview-inline');
+  if (anterior) anterior.remove();
+  var caixa = document.createElement('div');
+  caixa.className = 'preview-inline';
+  var header = document.createElement('div');
+  header.className = 'preview-header';
+  header.innerHTML = '<span>🧪 Preview</span>';
+  var botaoFechar = document.createElement('button');
+  botaoFechar.type = 'button';
+  botaoFechar.className = 'preview-close';
+  botaoFechar.textContent = '✕ Fechar';
+  header.appendChild(botaoFechar);
+  var iframe = document.createElement('iframe');
+  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
+  iframe.setAttribute('title', 'Preview do formulário');
+  iframe.srcdoc = html;
+  caixa.appendChild(header);
+  caixa.appendChild(iframe);
+  alvo.appendChild(caixa);
+  botaoFechar.addEventListener('click', function(){ caixa.remove(); });
+  caixa.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function abrirOneCompiler(codigo) {
+  var url = 'https://onecompiler.com/html?code=' + encodeURIComponent(codigo);
+  if (url.length < 7500) {
+    var win = window.open(url, '_blank');
+    if (!win) mostrarToast('⚠️ Pop-up bloqueado. Use Copiar e cole no onecompiler.com/html.');
+    return;
+  }
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://onecompiler.com/html';
+  form.target = '_blank';
+  form.style.display = 'none';
+  var campo = document.createElement('input');
+  campo.type = 'hidden';
+  campo.name = 'code';
+  campo.value = codigo;
+  form.appendChild(campo);
+  document.body.appendChild(form);
+  try { form.submit(); }
+  catch (e) { mostrarToast('⚠️ Erro. Use o botão Copiar.'); }
+  document.body.removeChild(form);
+  mostrarToast('📤 Enviando para o OneCompiler…');
+}
+
+function baixarCodigo(nome, codigo) {
+  var blob = new Blob([codigo], { type: 'text/html;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = nome;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 30000);
+  mostrarToast('✅ Download iniciado.');
+}
+
+var toastTimer = null;
+function mostrarToast(msg) {
+  var t = document.getElementById('toastNotificacao');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.display = 'block';
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display = 'none'; }, 3600);
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+var respostas = {};
+
+function montarQuestoes() {
+  var container = document.getElementById('containerQuestoes');
+  if (!container) return;
+  container.innerHTML = '';
+  QUESTOES.forEach(function(q, idx){
+    var div = document.createElement('div');
+    div.className = 'question';
+    div.id = 'q' + (idx + 1);
+    var h = document.createElement('div');
+    h.className = 'question-header';
+    h.innerHTML = '<span class="question-number">' + (idx + 1) + '</span><div>' + q.pergunta + '</div>';
+    div.appendChild(h);
+    var opts = document.createElement('div');
+    opts.className = 'options';
+    q.opcoes.forEach(function(op){
+      var opt = document.createElement('div');
+      opt.className = 'option';
+      opt.dataset.letra = op.l;
+      var radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'q' + (idx + 1);
+      radio.value = op.l;
+      var label = document.createElement('label');
+      label.innerHTML = '<strong>' + op.l + ')</strong> ' + op.t;
+      opt.appendChild(radio);
+      opt.appendChild(label);
+      opt.addEventListener('click', function(ev){
+        ev.preventDefault();
+        marcar(idx + 1, op.l, opt);
+      });
+      opts.appendChild(opt);
+    });
+    div.appendChild(opts);
+    var feed = document.createElement('div');
+    feed.className = 'feedback-imediato';
+    feed.id = 'feed-q' + (idx + 1);
+    div.appendChild(feed);
+    container.appendChild(div);
+  });
+}
+
+function marcar(num, letra, opt) {
+  if (respostas[num]) return;
+  var div = document.getElementById('q' + num);
+  if (!div) return;
+  div.querySelectorAll('.option').forEach(function(o){
+    o.classList.add('disabled');
+    var r = o.querySelector('input');
+    if (r) r.checked = false;
+  });
+  opt.classList.add('selecionada');
+  var q = QUESTOES[num - 1];
+  var acertou = (letra === q.correta);
+  var feed = document.getElementById('feed-q' + num);
+  if (acertou) {
+    opt.classList.add('correct');
+    div.classList.add('correta-q');
+    if (feed) {
+      feed.classList.add('mostrar', 'ok');
+      feed.innerHTML = '✅ <strong>Correto!</strong> ' + q.explicacao;
+    }
+  } else {
+    opt.classList.add('wrong');
+    div.classList.add('errada-q');
+    var corretaEl = div.querySelector('.option[data-letra="' + q.correta + '"]');
+    if (corretaEl) corretaEl.classList.add('correct');
+    if (feed) {
+      feed.classList.add('mostrar', 'no');
+      feed.innerHTML = '❌ <strong>Ainda não.</strong> ' + q.explicacao;
+    }
+  }
+  respostas[num] = letra;
+  atualizarProgresso();
+}
+
+function atualizarProgresso() {
+  var total = QUESTOES.length;
+  var feitas = Object.keys(respostas).length;
+  var txt = document.getElementById('txtProgresso');
+  var fill = document.getElementById('fillProgresso');
+  var btn = document.getElementById('btnFinalizar');
+  if (txt) txt.textContent = feitas + ' de ' + total;
+  if (fill) fill.style.width = (feitas / total * 100) + '%';
+  if (btn) btn.disabled = feitas < total;
+}
+
+function finalizarQuiz() {
+  var gab = document.getElementById('listaGabarito');
+  if (!gab) return;
+  var acertos = 0;
+  var html = '';
+  QUESTOES.forEach(function(q, idx){
+    var num = idx + 1;
+    var resp = respostas[num];
+    var acertou = (resp === q.correta);
+    if (acertou) acertos++;
+    var cor = acertou ? '#15803d' : '#b91c1c';
+    var simb = acertou ? '✅' : '❌';
+    html += '<div class="gabarito-item" style="color:' + cor + ';">' +
+              '<strong>' + simb + ' Questão ' + num + '</strong> — ' +
+              (acertou ? 'Correta.' : ('Você marcou (' + esc(resp || '—') + '); gabarito (' + q.correta + ').')) +
+              '<div style="color:#64748b;font-size:.85rem;margin-top:4px;font-style:italic;">' + q.explicacao + '</div>' +
+            '</div>';
+  });
+  var pct = Math.round((acertos / QUESTOES.length) * 100);
+  var diag = pct >= 85 ? '🏆 Excelente! Domínio pleno.'
+           : pct >= 65 ? '👏 Bom rendimento!'
+           : '📖 Revisar os conceitos e refazer.';
+  html = '<div style="text-align:center;padding:14px;background:#f0fdf4;border-radius:10px;margin-bottom:16px;">' +
+           '<div style="font-size:1.5rem;font-weight:900;color:#15803d;">' + acertos + ' / ' + QUESTOES.length + '</div>' +
+           '<div style="color:#166534;font-weight:700;">Aproveitamento: ' + pct + '% — ' + diag + '</div>' +
+         '</div>' + html;
+  gab.innerHTML = html;
+  document.getElementById('resultados').classList.add('mostrar');
+  document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function limparQuiz() {
+  if (!confirm('Deseja limpar todas as respostas?')) return;
+  respostas = {};
+  document.querySelectorAll('.option').forEach(function(o){
+    o.classList.remove('selecionada', 'correct', 'wrong', 'disabled');
+    var r = o.querySelector('input');
+    if (r) r.checked = false;
+  });
+  document.querySelectorAll('.question').forEach(function(q){ q.classList.remove('correta-q', 'errada-q'); });
+  document.querySelectorAll('.feedback-imediato').forEach(function(f){ f.classList.remove('mostrar', 'ok', 'no'); f.innerHTML = ''; });
+  document.getElementById('resultados').classList.remove('mostrar');
+  atualizarProgresso();
+}
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', function(){
+  montarCodigosFixos();
+  montarLabs();
+  montarQuestoes();
+  atualizarProgresso();
+
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ trocarAba(btn.dataset.aba, btn); });
+  });
+
+  document.querySelectorAll('[data-copiar="anatomia"]').forEach(function(b){
+    b.addEventListener('click', function(){ copiarTexto(CODIGO_ANATOMIA, b); });
+  });
+  document.querySelectorAll('[data-copiar="fieldset"]').forEach(function(b){
+    b.addEventListener('click', function(){ copiarTexto(CODIGO_FIELDSET, b); });
+  });
+  document.querySelectorAll('[data-preview="anatomia"]').forEach(function(b){
+    b.addEventListener('click', function(){ abrirPreview(CODIGO_ANATOMIA, 'preview-anatomia'); });
+  });
+  document.querySelectorAll('[data-preview="fieldset"]').forEach(function(b){
+    b.addEventListener('click', function(){ abrirPreview(CODIGO_FIELDSET, 'preview-fieldset'); });
+  });
+  document.querySelectorAll('[data-onecompiler="anatomia"]').forEach(function(b){
+    b.addEventListener('click', function(){ abrirOneCompiler(CODIGO_ANATOMIA); });
+  });
+
+  document.querySelectorAll('[data-copiar-lab]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.copiarLab;
+      if (LABS[k]) copiarTexto(LABS[k].codigo, b);
+    });
+  });
+  document.querySelectorAll('[data-preview-lab]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.previewLab;
+      if (LABS[k]) abrirPreview(LABS[k].codigo, k + '-preview');
+    });
+  });
+  document.querySelectorAll('[data-oc-lab]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.ocLab;
+      if (LABS[k]) abrirOneCompiler(LABS[k].codigo);
+    });
+  });
+  document.querySelectorAll('[data-download-lab]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.downloadLab;
+      if (LABS[k]) baixarCodigo(LABS[k].nome, LABS[k].codigo);
+    });
+  });
+
+  var btnFinalizar = document.getElementById('btnFinalizar');
+  if (btnFinalizar) btnFinalizar.addEventListener('click', finalizarQuiz);
+
+  var btnLimpar = document.getElementById('btnLimpar');
+  if (btnLimpar) btnLimpar.addEventListener('click', limparQuiz);
+
+  var btnTopo = document.getElementById('btnTopo');
+  if (btnTopo) btnTopo.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+});
+</script>
+</body>
+</html>
+```

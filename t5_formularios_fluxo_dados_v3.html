@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📝 TEMA 05 • Formulários — Do Campo ao Dado</title>
+<style>
+  :root{
+    --bg-body:#06101c; --surface-dark:#0f1b2d; --surface-hover:#1b2a42;
+    --card-white:#ffffff; --primary:#0369a1; --primary-hover:#075985;
+    --primary-light:#38bdf8; --accent:#0d9488; --accent-light:#2dd4bf;
+    --text-dark:#0f172a; --text-muted:#64748b;
+    --border-light:#e2e8f0; --border-dark:#334155; --radius-main:20px;
+    --transicao:all .25s ease;
+    --get-color:#0284c7; --post-color:#7c3aed; --json-color:#d97706;
+    --storage-color:#16a34a; --server-color:#dc2626;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(circle at 10% 15%,#062a3a 0%,#06101c 65%);
+    color:var(--text-dark);min-height:100vh;padding:24px 14px 90px;line-height:1.6;}
+  .container{max-width:1150px;margin:0 auto;}
+
+  .header{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 50%,#0d9488 100%);
+    border-radius:var(--radius-main);padding:38px 24px;margin-bottom:24px;text-align:center;
+    color:#fff;box-shadow:0 12px 35px rgba(3,105,161,.4);}
+  .header h1{font-size:2.1rem;margin-bottom:8px;letter-spacing:-.5px;
+    display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+  .header h1 span{color:#a7f3d0;}
+  .header p{opacity:.95;font-size:1.05rem;max-width:900px;margin:0 auto;}
+  .badge-group{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px;}
+  .badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+    padding:5px 14px;border-radius:30px;font-size:.75rem;font-weight:700;color:#fff;}
+
+  .tabs-nav{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:22px;}
+  .tab-btn{background:var(--surface-dark);color:#94a3b8;border:1px solid var(--border-dark);
+    padding:12px 18px;border-radius:30px;font-size:.88rem;font-weight:700;cursor:pointer;
+    white-space:nowrap;transition:var(--transicao);font-family:inherit;}
+  .tab-btn:hover{color:#fff;background:var(--surface-hover);}
+  .tab-btn.active{background:linear-gradient(135deg,#075985,#0d9488);color:#fff;
+    border-color:#2dd4bf;box-shadow:0 0 16px rgba(13,148,136,.45);}
+  .tab-content{display:none;animation:fadeIn .3s ease-out;}
+  .tab-content.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .card{background:var(--card-white);border-radius:var(--radius-main);padding:28px;
+    margin-bottom:24px;box-shadow:0 10px 30px rgba(0,0,0,.15);}
+  .card h2{color:#075985;margin-bottom:14px;border-left:5px solid var(--primary);
+    padding-left:12px;font-size:1.45rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .card h3{color:#0f172a;margin:22px 0 10px 0;font-size:1.15rem;border-bottom:2px dashed #cbd5e1;padding-bottom:6px;}
+  .card h4{color:#1e293b;margin:18px 0 8px 0;font-size:1rem;font-weight:700;}
+  .card p{color:#334155;margin-bottom:12px;font-size:.96rem;}
+  .card ul,.card ol{color:#334155;line-height:1.8;margin:8px 0 14px 25px;font-size:.95rem;}
+  .card li{margin-bottom:4px;}
+
+  .highlight-box{padding:16px 20px;border-radius:12px;margin:14px 0;font-size:.94rem;line-height:1.7;}
+  .highlight-box.blue{background:#e0f2fe;border-left:5px solid #0284c7;color:#0c4a6e;}
+  .highlight-box.amber{background:#fef3c7;border-left:5px solid #d97706;color:#78350f;}
+  .highlight-box.rose{background:#ffe4e6;border-left:5px solid #e11d48;color:#881337;}
+  .highlight-box.green{background:#dcfce7;border-left:5px solid #16a34a;color:#14532d;}
+  .highlight-box.purple{background:#ede9fe;border-left:5px solid #7c3aed;color:#4c1d95;}
+  .highlight-box code{background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.15);
+    color:#0f172a;padding:2px 6px;border-radius:4px;font-weight:800;font-family:'Courier New',monospace;font-size:.88em;}
+
+  code{background:#f1f5f9;color:#0c4a6e;padding:2px 6px;border-radius:4px;
+    font-family:'Courier New',monospace;font-weight:700;font-size:.88em;border:1px solid var(--border-light);}
+
+  .code-wrapper{position:relative;margin:18px 0;border-radius:14px;overflow:hidden;
+    border:1px solid var(--border-dark);background:#0a1420;}
+  .code-header{display:flex;justify-content:space-between;align-items:center;
+    background:#0f1b2d;padding:10px 16px;border-bottom:1px solid var(--border-dark);flex-wrap:wrap;gap:8px;}
+  .code-title{color:#7dd3fc;font-size:.84rem;font-weight:700;font-family:monospace;}
+  .code-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .code-actions button{border:none;padding:6px 14px;border-radius:6px;cursor:pointer;
+    font-size:.76rem;font-weight:700;transition:var(--transicao);
+    display:inline-flex;align-items:center;gap:5px;font-family:inherit;}
+  .copy-btn{background:#10b981;color:#042f2e;}
+  .copy-btn:hover{background:#059669;color:#fff;}
+  .run-inline-btn{background:#0284c7;color:#fff;}
+  .run-inline-btn:hover{background:#0369a1;}
+  .download-btn{background:#8b5cf6;color:#fff;}
+  .download-btn:hover{background:#7c3aed;}
+  .code-pane{padding:18px 20px;color:#e2e8f0;font-family:'Courier New',monospace;
+    font-size:.82rem;line-height:1.65;overflow-x:auto;white-space:pre;max-height:520px;}
+  .preview-inline{margin:14px 0;border:1px solid var(--border-dark);border-radius:12px;overflow:hidden;background:#0a1420;}
+  .preview-inline .preview-header{display:flex;justify-content:space-between;align-items:center;
+    padding:8px 12px;background:#0f1b2d;border-bottom:1px solid #1e293b;color:#cbd5e1;
+    font-size:.78rem;font-weight:700;font-family:monospace;gap:8px;flex-wrap:wrap;}
+  .preview-inline .preview-close{background:transparent;border:1px solid #334155;color:#f87171;
+    padding:3px 10px;border-radius:6px;cursor:pointer;font-size:.72rem;font-weight:700;font-family:inherit;}
+  .preview-inline iframe{width:100%;height:480px;border:none;background:#fff;display:block;}
+
+  .linha-explicacao{display:grid;grid-template-columns:52px 1fr;gap:12px;
+    padding:10px 0;border-bottom:1px solid #f1f5f9;align-items:flex-start;}
+  .linha-explicacao:hover{background:#f8fafc;}
+  .linha-num{background:#0a1420;color:#7dd3fc;font-family:'Courier New',monospace;
+    font-size:.78rem;font-weight:800;padding:4px 8px;border-radius:6px;
+    text-align:center;line-height:1.4;align-self:flex-start;}
+  .linha-conteudo{display:flex;flex-direction:column;gap:6px;}
+  .linha-codigo{background:#0a1420;color:#e2e8f0;padding:8px 12px;border-radius:6px;
+    font-family:'Courier New',monospace;font-size:.8rem;overflow-x:auto;white-space:pre;}
+  .linha-texto{color:#334155;font-size:.88rem;line-height:1.65;}
+  .linha-texto code{font-size:.86em;background:#f1f5f9;border:1px solid #cbd5e1;
+    padding:1px 5px;border-radius:4px;color:#0c4a6e;}
+  .explicacao-grupo{background:#f8fafc;border-left:4px solid #0369a1;
+    border-radius:8px;padding:6px 16px;margin:12px 0;}
+  .explicacao-grupo h4{color:#0c4a6e;font-size:1rem;margin:10px 0 6px;}
+
+  .comparacao-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0;}
+  .bloco-comparacao{background:#f8fafc;border:2px solid var(--border-light);border-radius:14px;
+    overflow:hidden;display:flex;flex-direction:column;}
+  .bloco-comparacao.get{border-color:#7dd3fc;}
+  .bloco-comparacao.post{border-color:#c4b5fd;}
+  .bloco-header{padding:14px 18px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .bloco-comparacao.get .bloco-header{background:linear-gradient(135deg,#0369a1,#0284c7);}
+  .bloco-comparacao.post .bloco-header{background:linear-gradient(135deg,#6d28d9,#7c3aed);}
+  .bloco-header h3{color:#fff;margin:0;border:0;font-size:1rem;padding:0;font-weight:800;}
+  .bloco-nivel{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);
+    padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:800;text-transform:uppercase;}
+  .bloco-comparacao .bloco-body{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:12px;}
+
+  .demo-form{background:#f8fafc;border:2px solid #cbd5e1;border-radius:14px;padding:22px;margin:16px 0;}
+  .demo-form h4{color:#075985;font-size:1rem;margin-bottom:14px;display:flex;gap:8px;align-items:center;}
+  .demo-form label{display:block;color:#0f172a;font-weight:700;font-size:.86rem;margin-bottom:4px;margin-top:14px;}
+  .demo-form label:first-of-type{margin-top:0;}
+  .demo-form input[type="text"],.demo-form input[type="email"],
+  .demo-form select,.demo-form textarea{
+    width:100%;padding:10px 14px;border:2px solid #cbd5e1;border-radius:8px;
+    font-family:inherit;font-size:.94rem;color:#0f172a;background:#fff;transition:var(--transicao);}
+  .demo-form input:focus,.demo-form select:focus,.demo-form textarea:focus{
+    outline:none;border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.15);}
+  .grupo-radio{display:flex;flex-direction:column;gap:6px;margin:6px 0;}
+  .grupo-radio label{display:flex;align-items:center;gap:8px;margin:0;font-weight:500;
+    background:#fff;border:2px solid var(--border-light);padding:8px 12px;border-radius:8px;
+    cursor:pointer;transition:var(--transicao);color:#334155;font-size:.92rem;}
+  .grupo-radio label:hover{border-color:#0d9488;background:#f0fdfa;}
+  .grupo-radio input[type="radio"],.grupo-radio input[type="checkbox"]{accent-color:#0d9488;cursor:pointer;}
+  .demo-form button{background:linear-gradient(135deg,#0369a1,#0d9488);color:#fff;border:none;
+    padding:11px 26px;border-radius:8px;font-weight:800;cursor:pointer;font-family:inherit;
+    font-size:.94rem;margin-top:18px;transition:var(--transicao);}
+  .demo-form button:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(3,105,161,.35);}
+  .demo-form button.btn-limpar{background:#64748b;margin-left:8px;}
+
+  .url-monitor{background:#0a1420;color:#e2e8f0;border-radius:10px;padding:14px 18px;
+    font-family:'Courier New',monospace;font-size:.86rem;line-height:1.7;
+    word-break:break-all;border:2px solid var(--border-dark);margin:14px 0;}
+  .url-monitor .url-base{color:#94a3b8;}
+  .url-monitor .url-query{color:#7dd3fc;font-weight:800;}
+  .url-monitor .url-label{color:#fbbf24;font-size:.7rem;display:block;margin-bottom:6px;font-weight:800;letter-spacing:1px;}
+  .url-vazia{color:#64748b;font-style:italic;}
+
+  .storage-painel{background:#0a1420;color:#e2e8f0;border-radius:12px;padding:18px 20px;
+    margin:14px 0;font-family:'Courier New',monospace;font-size:.82rem;
+    line-height:1.7;border:2px solid #334155;}
+  .storage-painel h4{color:#34d399;font-size:.92rem;margin-bottom:12px;display:flex;align-items:center;gap:8px;
+    font-family:'Segoe UI',sans-serif;}
+  .storage-item{padding:10px 12px;background:#0f172a;border-radius:8px;margin-bottom:10px;
+    border-left:3px solid #16a34a;}
+  .storage-key{color:#7dd3fc;font-weight:800;}
+  .storage-value{color:#86efac;margin-top:4px;display:block;white-space:pre-wrap;word-break:break-all;}
+  .storage-vazio{color:#64748b;font-style:italic;padding:12px;text-align:center;}
+  .storage-acoes{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;}
+  .storage-acoes button{background:#334155;color:#f1f5f9;border:none;padding:6px 14px;
+    border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;
+    transition:var(--transicao);}
+  .storage-acoes button:hover{background:#475569;}
+  .storage-acoes button.btn-danger{background:#7f1d1d;color:#fecaca;}
+  .storage-acoes button.btn-danger:hover{background:#991b1b;}
+
+  .mission-list{display:flex;flex-direction:column;gap:10px;margin:14px 0;}
+  .mission-item{background:#f8fafc;border:2px solid #cbd5e1;border-left:5px solid #0284c7;
+    border-radius:10px;padding:14px 18px;display:flex;align-items:flex-start;gap:14px;
+    transition:var(--transicao);}
+  .mission-item.concluida{border-color:#16a34a;border-left-color:#16a34a;background:#dcfce7;}
+  .mission-item .checkbox{width:24px;height:24px;border:2px solid #0284c7;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;
+    flex-shrink:0;margin-top:2px;background:#fff;cursor:pointer;transition:var(--transicao);}
+  .mission-item.concluida .checkbox{background:#16a34a;border-color:#16a34a;}
+  .mission-item.concluida .checkbox::after{content:'✓';}
+  .mission-item .info{flex:1;}
+  .mission-item .info strong{color:#075985;display:block;font-size:.94rem;margin-bottom:4px;}
+  .mission-item .info p{color:#334155;font-size:.86rem;margin:0;line-height:1.6;}
+  .mission-item .info p code{font-size:.86em;}
+  .mission-progresso{background:#0f1b2d;color:#fff;border-radius:10px;padding:14px 20px;
+    display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+  .mission-progresso span{font-size:.9rem;font-weight:700;}
+  .mission-barra{flex:1;min-width:140px;height:10px;background:#334155;border-radius:5px;overflow:hidden;}
+  .mission-barra-preenchimento{height:100%;width:0%;background:linear-gradient(90deg,#0284c7,#0d9488);transition:width .4s;}
+
+  .quiz-header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+    background:#0f1b2d;color:#fff;padding:14px 20px;border-radius:12px;margin-bottom:20px;}
+  .quiz-header .progresso-texto{font-size:.9rem;}
+  .barra-fundo{flex:1;min-width:140px;height:10px;background:#334155;border-radius:5px;overflow:hidden;}
+  .barra-preenchimento{height:100%;width:0%;background:linear-gradient(90deg,#38bdf8,#0d9488);transition:width .3s;}
+  .question{background:#f8fafc;border-radius:12px;padding:18px 20px;margin-bottom:16px;
+    border-left:4px solid var(--primary);border-top:1px solid var(--border-light);
+    border-right:1px solid var(--border-light);border-bottom:1px solid var(--border-light);}
+  .question-header{font-weight:700;color:#0f172a;margin-bottom:12px;display:flex;
+    align-items:flex-start;gap:10px;font-size:.96rem;line-height:1.5;}
+  .question-header code{font-size:.92em;background:#e0f2fe;border-color:#7dd3fc;color:#0c4a6e;padding:1px 6px;}
+  .question-number{background:var(--primary);color:#fff;width:26px;height:26px;border-radius:50%;
+    text-align:center;line-height:26px;font-size:12px;font-weight:bold;flex-shrink:0;margin-top:2px;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .option{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;
+    border-radius:8px;border:2px solid var(--border-light);cursor:pointer;
+    transition:var(--transicao);font-size:.9rem;color:#334155;}
+  .option:hover:not(.disabled){border-color:var(--primary);background:#e0f2fe;transform:translateX(3px);}
+  .option.correct{border-color:#16a34a !important;background:#dcfce7 !important;}
+  .option.wrong{border-color:#dc2626 !important;background:#fee2e2 !important;}
+  .option.disabled{cursor:default;opacity:.92;}
+  .feedback-imediato{display:none;margin-top:12px;padding:12px 16px;border-radius:8px;
+    font-size:.88rem;line-height:1.6;}
+  .feedback-imediato.mostrar{display:block;}
+  .feedback-imediato.ok{background:#dcfce7;color:#14532d;border-left:4px solid #16a34a;}
+  .feedback-imediato.no{background:#fee2e2;color:#881337;border-left:4px solid #dc2626;}
+
+  .results{background:#fff;border:2px solid #0d9488;border-radius:12px;padding:18px 22px;
+    margin-top:20px;display:none;}
+  .results.mostrar{display:block;}
+  .results h4{color:#115e59;margin-bottom:10px;}
+
+  .btn-grupo{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap;}
+  .btn{background:linear-gradient(135deg,var(--primary),#0d9488);color:#fff;border:none;
+    padding:12px 26px;border-radius:30px;cursor:pointer;font-size:.95rem;font-weight:700;
+    transition:var(--transicao);font-family:inherit;}
+  .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 18px rgba(3,105,161,.35);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-secondary{background:#64748b;}
+
+  .toast-notificacao{position:fixed;bottom:24px;right:24px;background:#0d9488;color:#fff;
+    padding:12px 20px;border-radius:10px;font-weight:bold;font-size:.85rem;
+    box-shadow:0 10px 25px rgba(0,0,0,.3);display:none;z-index:9999;
+    animation:slideUp .3s ease;max-width:340px;line-height:1.5;}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .btn-top{position:fixed;bottom:20px;right:20px;background:var(--primary);color:#fff;
+    border:none;padding:10px 18px;border-radius:50px;cursor:pointer;font-size:12px;
+    font-weight:700;box-shadow:0 4px 15px rgba(0,0,0,.25);z-index:100;}
+
+  @media (max-width:820px){.comparacao-grid{grid-template-columns:1fr;}}
+  @media (max-width:768px){
+    .header h1{font-size:1.6rem;}
+    .card{padding:18px 14px;}
+    .tab-btn{padding:10px 14px;font-size:.8rem;}
+    .preview-inline iframe{height:380px;}
+    .linha-explicacao{grid-template-columns:1fr;gap:6px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="inicio">
+  <header class="header">
+    <h1>📝 TEMA <span>05</span> &bull; Do Campo ao Dado</h1>
+    <p>Como um formulário HTML vira informação: percurso do dado do navegador até o armazenamento, com código explicado linha a linha</p>
+    <div class="badge-group">
+      <span class="badge">🎬 Situação real</span>
+      <span class="badge">🔀 GET vs POST</span>
+      <span class="badge">📦 JSON + localStorage</span>
+      <span class="badge">🧠 Script linha a linha</span>
+      <span class="badge">✅ Missões</span>
+      <span class="badge">📝 Checkpoint</span>
+    </div>
+  </header>
+
+  <nav class="tabs-nav">
+    <button type="button" class="tab-btn active" data-aba="aba-cena">🎬 1. Situação</button>
+    <button type="button" class="tab-btn" data-aba="aba-get-post">🔀 2. GET vs POST</button>
+    <button type="button" class="tab-btn" data-aba="aba-storage">📦 3. JSON + localStorage</button>
+    <button type="button" class="tab-btn" data-aba="aba-js">🧠 4. Script linha a linha</button>
+    <button type="button" class="tab-btn" data-aba="aba-missoes">✅ 5. Missões</button>
+    <button type="button" class="tab-btn" data-aba="aba-checkpoint">📝 6. Checkpoint</button>
+  </nav>
+
+  <div id="aba-cena" class="tab-content active">
+    <section class="card">
+      <h2>🎬 Situação real antes da sintaxe</h2>
+
+      <div class="demo-form" style="background:linear-gradient(135deg,#0c4a6e,#075985);color:#fff;border-color:#075985;">
+        <h4 style="color:#a7f3d0;">📅 Inscrição — Evento Escolar 2026</h4>
+        <p style="color:#cbd5e1;font-size:.92rem;margin-bottom:14px;">A escola precisa saber quem participará do evento de encerramento. Esta é a primeira versão do formulário — ainda sem código, apenas o desenho.</p>
+
+        <label for="c-nome" style="color:#e0f2fe;">Nome do aluno</label>
+        <input type="text" id="c-nome" placeholder="Digite o nome completo" disabled>
+
+        <label for="c-email" style="color:#e0f2fe;">E-mail</label>
+        <input type="email" id="c-email" placeholder="voce@exemplo.com" disabled>
+
+        <label style="color:#e0f2fe;">Turno</label>
+        <div class="grupo-radio">
+          <label style="color:#334155;"><input type="radio" name="turno-cena" disabled> Manhã</label>
+          <label style="color:#334155;"><input type="radio" name="turno-cena" disabled> Tarde</label>
+          <label style="color:#334155;"><input type="radio" name="turno-cena" disabled> Noite</label>
+        </div>
+
+        <label style="color:#e0f2fe;">Confirma presença?</label>
+        <div class="grupo-radio">
+          <label style="color:#334155;"><input type="radio" name="presenca-cena" disabled> Sim</label>
+          <label style="color:#334155;"><input type="radio" name="presenca-cena" disabled> Não</label>
+        </div>
+      </div>
+
+      <div class="highlight-box blue">
+        <strong>🤔 Antes de qualquer tag, discuta:</strong>
+        <ul style="margin:8px 0 0 22px;color:#0c4a6e;">
+          <li>Quais informações são realmente necessárias?</li>
+          <li>Em quais campos o aluno precisa <em>digitar</em>? Em quais só precisa <em>escolher</em>?</li>
+          <li>Quando é melhor usar escolha em vez de digitação?</li>
+          <li>O que deveria acontecer ao clicar em "Enviar"?</li>
+          <li>Quem recebe os dados? Para onde vão?</li>
+        </ul>
+        Nestas abas, você vai construir essa resposta do zero, começando pela sintaxe básica e terminando no código que salva os dados no próprio navegador.
+      </div>
+
+      <h3>🏷️ Anatomia mínima de um formulário</h3>
+      <p>O elemento <code>&lt;form&gt;</code> é o contêiner. Dentro dele, cada campo precisa de um <strong>rótulo</strong> (<code>&lt;label&gt;</code>) e de uma <strong>caixa</strong> (<code>&lt;input&gt;</code>). A ligação entre os dois é feita pelo par <code>for</code> + <code>id</code>. O nome que o dado vai levar para o servidor é dado pelo <code>name</code>.</p>
+
+      <div style="background:#0a1420;color:#e2e8f0;padding:14px 18px;border-radius:10px;margin:10px 0;font-family:'Courier New',monospace;font-size:.86rem;overflow-x:auto;white-space:pre;line-height:1.7;border:1px solid #334155;">&lt;<span style="color:#7dd3fc;">form</span>&gt;
+  &lt;<span style="color:#7dd3fc;">label</span> <span style="color:#fbbf24;">for</span>=<span style="color:#86efac;">"nome"</span>&gt;Seu nome:&lt;/<span style="color:#7dd3fc;">label</span>&gt;
+  &lt;<span style="color:#7dd3fc;">input</span> <span style="color:#fbbf24;">type</span>=<span style="color:#86efac;">"text"</span> <span style="color:#fbbf24;">id</span>=<span style="color:#86efac;">"nome"</span> <span style="color:#fbbf24;">name</span>=<span style="color:#86efac;">"nome"</span>&gt;
+
+  &lt;<span style="color:#7dd3fc;">button</span> <span style="color:#fbbf24;">type</span>=<span style="color:#86efac;">"submit"</span>&gt;Enviar&lt;/<span style="color:#7dd3fc;">button</span>&gt;
+&lt;/<span style="color:#7dd3fc;">form</span>&gt;</div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin:14px 0;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th style="padding:10px 12px;text-align:left;color:#0f172a;">Código</th>
+            <th style="padding:10px 12px;text-align:left;color:#0f172a;">O que significa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;"><code>&lt;form&gt;</code></td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">Agrupa os campos. Nada é enviado fora dele.</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;"><code>&lt;label&gt;</code></td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">Texto visível que diz <em>o que</em> preencher.</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;"><code>for="nome"</code></td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">Liga o rótulo ao campo que tem mesmo <code>id</code>.</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;"><code>&lt;input&gt;</code></td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">A caixa em si. Não tem fechamento.</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;"><code>type="text"</code></td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">Define o comportamento: texto livre.</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;"><code>id="nome"</code></td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">Identifica o campo na página.</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;"><code>name="nome"</code></td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">Identifica o dado no envio.</td></tr>
+          <tr><td style="padding:8px 12px;"><code>&lt;button&gt;</code></td>
+              <td style="padding:8px 12px;">Dispara o envio.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box amber">
+        <strong>⚠️ Atenção na diferença:</strong> <code>id</code> e <code>name</code> não são sinônimos. O <code>id</code> identifica o <strong>elemento</strong> na página (para o <code>&lt;label&gt;</code> e para o CSS). O <code>name</code> identifica o <strong>dado</strong> que vai viajar quando o formulário for enviado. Um campo sem <code>name</code> simplesmente não é enviado.
+      </div>
+    </section>
+  </div>
+
+  <div id="aba-get-post" class="tab-content">
+    <section class="card">
+      <h2>🔀 GET vs POST — dois arquivos para você comparar</h2>
+      <p>Aqui estão <strong>dois arquivos completos</strong>. Baixe, abra cada um no navegador e veja a diferença acontecer. Não é teoria: é você testando.</p>
+
+      <div class="comparacao-grid">
+        <div class="bloco-comparacao get">
+          <div class="bloco-header">
+            <h3>📤 01_get.html</h3>
+            <span class="bloco-nivel">Dados na URL</span>
+          </div>
+          <div class="bloco-body">
+            <p style="font-size:.9rem;color:#334155;">Ao enviar, o navegador monta uma URL com todos os campos depois do <code>?</code>. Você vê os dados na barra de endereços.</p>
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span class="code-title">01_get.html</span>
+                <div class="code-actions">
+                  <button type="button" class="copy-btn" data-copiar="get">📋 Copiar</button>
+                  <button type="button" class="run-inline-btn" data-preview="get">🧪 Preview</button>
+                  <button type="button" class="download-btn" data-download="get">⬇️ Baixar</button>
+                </div>
+              </div>
+              <div class="code-pane"><pre id="codigo-get"></pre></div>
+            </div>
+            <div id="preview-get"></div>
+          </div>
+        </div>
+
+        <div class="bloco-comparacao post">
+          <div class="bloco-header">
+            <h3>📥 02_post.html</h3>
+            <span class="bloco-nivel">Dados no corpo</span>
+          </div>
+          <div class="bloco-body">
+            <p style="font-size:.9rem;color:#334155;">Ao enviar, o navegador envia os dados no <em>corpo</em> da requisição. A URL fica limpa. Se não houver servidor para receber, aparece um erro — e isso é justamente o que você precisa ver.</p>
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span class="code-title">02_post.html</span>
+                <div class="code-actions">
+                  <button type="button" class="copy-btn" data-copiar="post">📋 Copiar</button>
+                  <button type="button" class="run-inline-btn" data-preview="post">🧪 Preview</button>
+                  <button type="button" class="download-btn" data-download="post">⬇️ Baixar</button>
+                </div>
+              </div>
+              <div class="code-pane"><pre id="codigo-post"></pre></div>
+            </div>
+            <div id="preview-post"></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>🔬 Experimento guiado — como comparar</h3>
+      <div class="highlight-box blue">
+        <strong>Siga estes passos:</strong>
+        <ol style="margin:8px 0 0 22px;color:#0c4a6e;">
+          <li>Baixe os dois arquivos. Salve na mesma pasta.</li>
+          <li>Abra <code>01_get.html</code> no Chrome. Digite <strong>Ana</strong> no nome, clique em <strong>Enviar</strong>.</li>
+          <li>Olhe a barra de endereços. Você verá algo como <code>file:///.../01_get.html?nome=Ana</code>. Os dados apareceram na URL.</li>
+          <li>Volte. Abra <code>02_post.html</code>. Digite <strong>Ana</strong>, clique em <strong>Enviar</strong>.</li>
+          <li>A URL continua limpa, mas o navegador reclama de erro — porque não há servidor para receber o POST.</li>
+        </ol>
+        <strong style="display:block;margin-top:10px;">O que você deduz disso?</strong>
+        <ul style="margin:6px 0 0 22px;color:#0c4a6e;">
+          <li>GET é suficiente para uma demonstração local: os dados aparecem, você vê o que foi enviado.</li>
+          <li>POST esconde os dados — mas exige um destino preparado para receber.</li>
+          <li>Nenhum dos dois "salva" nada. Salvar exige armazenamento — e é o próximo assunto.</li>
+        </ul>
+      </div>
+
+      <h3>📊 Comparando lado a lado</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin:16px 0;">
+        <thead>
+          <tr style="background:linear-gradient(135deg,#0c4a6e,#0d9488);color:#fff;">
+            <th style="padding:12px;text-align:left;">Aspecto</th>
+            <th style="padding:12px;text-align:left;">GET</th>
+            <th style="padding:12px;text-align:left;">POST</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:10px;border-bottom:1px solid #e2e8f0;">Onde os dados vão</td>
+              <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Na URL, depois do <code>?</code></td>
+              <td style="padding:10px;border-bottom:1px solid #e2e8f0;">No corpo da requisição</td></tr>
+          <tr><td style="padding:10px;border-bottom:1px solid #e2e8f0;">Visível ao usuário</td>
+              <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Sim — aparece na barra</td>
+              <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Não — fica oculto</td></tr>
+          <tr><td style="padding:10px;border-bottom:1px solid #e2e8f0;">Funciona em arquivo local</td>
+              <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Sim, mostra os dados</td>
+              <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Não, reclama de destino</td></tr>
+          <tr><td style="padding:10px;border-bottom:1px solid #e2e8f0;">Uso típico</td>
+              <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Buscas, filtros</td>
+              <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Cadastros, login</td></tr>
+          <tr><td style="padding:10px;">Segurança</td>
+              <td style="padding:10px;" colspan="2">Nem GET nem POST criptografam. Para isso existe o <strong>HTTPS</strong>.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box amber">
+        <strong>⚠️ Desfazendo um mito:</strong> "POST é mais seguro que GET porque esconde os dados" — <em>errado</em>. Tanto GET quanto POST trafegam em claro. Quem protege contra interceptação é o protocolo HTTPS na conexão. POST é preferível para senhas por outros motivos (não fica no histórico, não fica na URL visível), mas nunca por criptografia.
+      </div>
+    </section>
+  </div>
+
+  <div id="aba-storage" class="tab-content">
+    <section class="card">
+      <h2>📦 JSON + localStorage — guardando o dado dentro do navegador</h2>
+
+      <div class="highlight-box blue">
+        <strong>Ideia central:</strong> o <code>localStorage</code> é um armário dentro do navegador. Ele guarda texto. Para guardar um objeto (nome + e-mail), você transforma em texto com <code>JSON.stringify</code>. Para recuperar, transforma de volta com <code>JSON.parse</code>.
+      </div>
+
+      <h3>🧪 Experimento ao vivo</h3>
+      <p>Preencha os campos, clique em <strong>Salvar</strong>, depois <strong>recarregue a página (F5)</strong>. Os dados continuam lá.</p>
+
+      <div class="demo-form">
+        <h4>📝 Inscrição no Evento Escolar 2026</h4>
+        <label for="s-nome">Nome completo</label>
+        <input type="text" id="s-nome" placeholder="Ex.: Ana Silva">
+
+        <label for="s-email">E-mail</label>
+        <input type="email" id="s-email" placeholder="voce@exemplo.com">
+
+        <label>Turno</label>
+        <div class="grupo-radio">
+          <label><input type="radio" name="s-turno" value="manha"> Manhã</label>
+          <label><input type="radio" name="s-turno" value="tarde"> Tarde</label>
+          <label><input type="radio" name="s-turno" value="noite"> Noite</label>
+        </div>
+
+        <label>Confirma presença?</label>
+        <div class="grupo-radio">
+          <label><input type="radio" name="s-presenca" value="sim"> Sim</label>
+          <label><input type="radio" name="s-presenca" value="nao"> Não</label>
+        </div>
+
+        <button type="button" id="btn-salvar">💾 Salvar no navegador</button>
+        <button type="button" class="btn-limpar" id="btn-limpar-dados">🗑️ Limpar</button>
+      </div>
+
+      <div class="storage-painel">
+        <h4>💾 O que está guardado agora (localStorage)</h4>
+        <div id="storage-view">
+          <span class="storage-vazio">Nenhum dado salvo ainda.</span>
+        </div>
+        <div class="storage-acoes">
+          <button type="button" id="btn-recarregar-storage">🔄 Recarregar painel</button>
+          <button type="button" class="btn-danger" id="btn-apagar-storage">🗑️ Apagar tudo</button>
+        </div>
+      </div>
+
+      <div class="storage-painel">
+        <h4>📄 Como texto JSON puro</h4>
+        <div id="json-view">
+          <span class="storage-vazio">O JSON aparecerá aqui depois de salvar.</span>
+        </div>
+      </div>
+
+      <div class="highlight-box green">
+        <strong>✅ O que provou:</strong> o dado saiu do formulário, virou texto, ficou guardado no navegador. Recarregar a página não apagou. Isso é persistência — diferente de uma variável JavaScript comum, que se perde ao recarregar.
+      </div>
+
+      <h3>⚠️ Três avisos sobre localStorage</h3>
+      <div class="highlight-box rose">
+        <ul style="margin:0 0 0 22px;color:#881337;">
+          <li>É <strong>por navegador e por site</strong> — outro computador não vê.</li>
+          <li>Não é seguro para senhas, cartões e dados sensíveis.</li>
+          <li>Limpar os dados do navegador apaga tudo. Não é backup.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div id="aba-js" class="tab-content">
+    <section class="card">
+      <h2>🧠 Script linha a linha — o código do experimento explicado</h2>
+      <p>Este é o código que rodou na aba anterior. Cada linha explicada isoladamente, para você entender o que cada comando faz no todo.</p>
+
+      <h3>💻 Código completo</h3>
+      <div class="code-wrapper">
+        <div class="code-header">
+          <span class="code-title">experimento-storage.html</span>
+          <div class="code-actions">
+            <button type="button" class="copy-btn" data-copiar="storage">📋 Copiar</button>
+            <button type="button" class="download-btn" data-download="storage">⬇️ Baixar</button>
+          </div>
+        </div>
+        <div class="code-pane"><pre id="codigo-storage"></pre></div>
+      </div>
+
+      <h3>📖 Linha a linha</h3>
+      <div class="explicacao-grupo">
+        <h4>Buscando os elementos da página</h4>
+        <div id="js-linhas"></div>
+      </div>
+    </section>
+  </div>
+
+  <div id="aba-missoes" class="tab-content">
+    <section class="card">
+      <h2>✅ Missões — construa o formulário do evento</h2>
+      <p>Cinco missões em ordem crescente. Marque à medida que consegue implementar no seu próprio arquivo. <strong>Não avance sem testar no navegador.</strong></p>
+
+      <div class="mission-progresso">
+        <span id="missao-contador">0/5 missões concluídas</span>
+        <div class="mission-barra"><div class="mission-barra-preenchimento" id="missao-barra"></div></div>
+      </div>
+
+      <div class="mission-list" id="mission-list"></div>
+
+      <h3>🎯 Formulário final de referência</h3>
+      <p>Compare com o seu depois de completar todas as missões.</p>
+
+      <div class="code-wrapper">
+        <div class="code-header">
+          <span class="code-title">formulario-final.html</span>
+          <div class="code-actions">
+            <button type="button" class="copy-btn" data-copiar="final">📋 Copiar</button>
+            <button type="button" class="run-inline-btn" data-preview="final">🧪 Preview</button>
+            <button type="button" class="download-btn" data-download="final">⬇️ Baixar</button>
+          </div>
+        </div>
+        <div class="code-pane"><pre id="codigo-final"></pre></div>
+      </div>
+      <div id="preview-final"></div>
+    </section>
+  </div>
+
+  <div id="aba-checkpoint" class="tab-content">
+    <section class="card">
+      <h2>📝 Checkpoint — 10 questões</h2>
+      <p>Responda com calma. Cada alternativa mostra a explicação na hora. Ao finalizar, veja o resultado geral.</p>
+
+      <div class="quiz-header">
+        <span class="progresso-texto">Progresso: <strong id="txt-progresso">0 de 10</strong></span>
+        <div class="barra-fundo"><div class="barra-preenchimento" id="fill-progresso"></div></div>
+      </div>
+
+      <div id="container-questoes"></div>
+
+      <div class="btn-grupo">
+        <button type="button" class="btn" id="btn-finalizar" disabled>✅ Ver resultado</button>
+        <button type="button" class="btn btn-secondary" id="btn-limpar-quiz">🔄 Limpar</button>
+      </div>
+
+      <div class="results" id="resultado-final">
+        <h4>📊 Seu resultado</h4>
+        <div id="resultado-conteudo"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer style="text-align:center;color:#94a3b8;font-size:.78rem;padding:22px 0;">
+    📝 Programação Front-End &bull; Tema 05: Formulários — Do Campo ao Dado &bull; 2026
+  </footer>
+</div>
+
+<div class="toast-notificacao" id="toast">✅ Feito!</div>
+<button type="button" class="btn-top" id="btn-topo">⬆️ Topo</button>
+
+<script>
+function esc(t){
+  return String(t == null ? '' : t)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+var CODIGO_GET =
+'<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+'  <title>01 — GET (dados na URL)</title>\n' +
+'  <style>\n' +
+'    body { font-family: Arial, sans-serif; padding: 24px; background: #f8fafc; }\n' +
+'    form { max-width: 420px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 12px;\n' +
+'           box-shadow: 0 4px 18px rgba(0,0,0,.08); }\n' +
+'    h1 { color: #0c4a6e; font-size: 1.25rem; margin-bottom: 6px; }\n' +
+'    p.sub { color: #64748b; font-size: .85rem; margin-bottom: 18px; }\n' +
+'    label { display: block; font-weight: 700; font-size: .85rem; color: #334155;\n' +
+'            margin-top: 12px; margin-bottom: 4px; }\n' +
+'    input { width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;\n' +
+'            font-family: inherit; font-size: .92rem; box-sizing: border-box; }\n' +
+'    button { width: 100%; margin-top: 18px; padding: 11px; background: #0284c7; color: #fff;\n' +
+'             border: none; border-radius: 8px; font-weight: 700; font-size: .94rem; cursor: pointer; }\n' +
+'    button:hover { background: #0369a1; }\n' +
+'  </style>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <form method="get">\n' +
+'    <h1>Método GET</h1>\n' +
+'    <p class="sub">Ao enviar, você verá os dados na URL.</p>\n' +
+'\n' +
+'    <label for="nome">Nome</label>\n' +
+'    <input type="text" id="nome" name="nome" placeholder="Digite seu nome">\n' +
+'\n' +
+'    <label for="email">E-mail</label>\n' +
+'    <input type="email" id="email" name="email" placeholder="voce@exemplo.com">\n' +
+'\n' +
+'    <button type="submit">Enviar por GET</button>\n' +
+'  </form>\n' +
+'</body>\n' +
+'</html>';
+
+var CODIGO_POST =
+'<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+'  <title>02 — POST (dados no corpo)</title>\n' +
+'  <style>\n' +
+'    body { font-family: Arial, sans-serif; padding: 24px; background: #f8fafc; }\n' +
+'    form { max-width: 420px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 12px;\n' +
+'           box-shadow: 0 4px 18px rgba(0,0,0,.08); }\n' +
+'    h1 { color: #6d28d9; font-size: 1.25rem; margin-bottom: 6px; }\n' +
+'    p.sub { color: #64748b; font-size: .85rem; margin-bottom: 18px; }\n' +
+'    label { display: block; font-weight: 700; font-size: .85rem; color: #334155;\n' +
+'            margin-top: 12px; margin-bottom: 4px; }\n' +
+'    input { width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;\n' +
+'            font-family: inherit; font-size: .92rem; box-sizing: border-box; }\n' +
+'    button { width: 100%; margin-top: 18px; padding: 11px; background: #7c3aed; color: #fff;\n' +
+'             border: none; border-radius: 8px; font-weight: 700; font-size: .94rem; cursor: pointer; }\n' +
+'    button:hover { background: #6d28d9; }\n' +
+'  </style>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <form method="post">\n' +
+'    <h1>Método POST</h1>\n' +
+'    <p class="sub">Ao enviar, os dados vão no corpo. A URL fica limpa. Em arquivo local,\n' +
+'    o navegador pode reclamar de destino.</p>\n' +
+'\n' +
+'    <label for="nome">Nome</label>\n' +
+'    <input type="text" id="nome" name="nome" placeholder="Digite seu nome">\n' +
+'\n' +
+'    <label for="email">E-mail</label>\n' +
+'    <input type="email" id="email" name="email" placeholder="voce@exemplo.com">\n' +
+'\n' +
+'    <button type="submit">Enviar por POST</button>\n' +
+'  </form>\n' +
+'</body>\n' +
+'</html>';
+
+var CODIGO_STORAGE =
+'<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <title>Experimento localStorage</title>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <h1>Cadastro</h1>\n' +
+'  <form id="cadastro">\n' +
+'    <label for="nome">Nome:</label>\n' +
+'    <input id="nome" name="nome" required>\n' +
+'\n' +
+'    <label for="email">E-mail:</label>\n' +
+'    <input id="email" name="email" type="email" required>\n' +
+'\n' +
+'    <button type="submit">Salvar</button>\n' +
+'  </form>\n' +
+'\n' +
+'  <pre id="resultado"></pre>\n' +
+'\n' +
+'  <script>\n' +
+'    var formulario = document.querySelector("#cadastro");\n' +
+'    var resultado = document.querySelector("#resultado");\n' +
+'\n' +
+'    formulario.addEventListener("submit", function(evento) {\n' +
+'      evento.preventDefault();\n' +
+'\n' +
+'      var dados = {\n' +
+'        nome: formulario.nome.value,\n' +
+'        email: formulario.email.value\n' +
+'      };\n' +
+'\n' +
+'      localStorage.setItem("cadastro", JSON.stringify(dados));\n' +
+'\n' +
+'      resultado.textContent = localStorage.getItem("cadastro");\n' +
+'    });\n' +
+'  <\/script>\n' +
+'</body>\n' +
+'</html>';
+
+var CODIGO_FINAL =
+'<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+'  <title>Inscrição do Evento Escolar 2026</title>\n' +
+'  <style>\n' +
+'    body { font-family: Arial, sans-serif; padding: 24px; background: #f8fafc; }\n' +
+'    form { max-width: 480px; margin: 0 auto; background: #fff; padding: 26px;\n' +
+'           border-radius: 14px; box-shadow: 0 4px 18px rgba(0,0,0,.08); }\n' +
+'    h1 { color: #0c4a6e; font-size: 1.35rem; margin-bottom: 18px; }\n' +
+'    label { display: block; font-weight: 700; font-size: .86rem; color: #334155;\n' +
+'            margin-top: 14px; margin-bottom: 6px; }\n' +
+'    input[type="text"], input[type="email"] {\n' +
+'      width: 100%; padding: 10px 14px; border: 2px solid #cbd5e1; border-radius: 8px;\n' +
+'      font-family: inherit; font-size: .94rem; box-sizing: border-box;\n' +
+'    }\n' +
+'    .grupo { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }\n' +
+'    .grupo label { display: flex; align-items: center; gap: 8px; font-weight: 500;\n' +
+'                   background: #f8fafc; border: 2px solid #e2e8f0; padding: 8px 12px;\n' +
+'                   border-radius: 8px; margin: 0; cursor: pointer; }\n' +
+'    .grupo input { accent-color: #0d9488; }\n' +
+'    button { width: 100%; padding: 12px; margin-top: 22px; background: #0d9488;\n' +
+'             color: #fff; border: none; border-radius: 8px;\n' +
+'             font-weight: 800; font-size: .96rem; cursor: pointer; }\n' +
+'    button:hover { background: #0f766e; }\n' +
+'  </style>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <form action="/inscricao" method="post">\n' +
+'    <h1>Inscrição — Evento Escolar 2026</h1>\n' +
+'\n' +
+'    <label for="nome">Nome completo</label>\n' +
+'    <input type="text" id="nome" name="nome" required placeholder="Nome do aluno">\n' +
+'\n' +
+'    <label for="email">E-mail</label>\n' +
+'    <input type="email" id="email" name="email" required placeholder="voce@exemplo.com">\n' +
+'\n' +
+'    <label>Turno</label>\n' +
+'    <div class="grupo">\n' +
+'      <label><input type="radio" name="turno" value="manha" required> Manhã</label>\n' +
+'      <label><input type="radio" name="turno" value="tarde"> Tarde</label>\n' +
+'      <label><input type="radio" name="turno" value="noite"> Noite</label>\n' +
+'    </div>\n' +
+'\n' +
+'    <label>Confirma presença?</label>\n' +
+'    <div class="grupo">\n' +
+'      <label><input type="radio" name="presenca" value="sim" required> Sim</label>\n' +
+'      <label><input type="radio" name="presenca" value="nao"> Não</label>\n' +
+'    </div>\n' +
+'\n' +
+'    <button type="submit">Enviar inscrição</button>\n' +
+'  </form>\n' +
+'</body>\n' +
+'</html>';
+
+var JS_LINHAS = [
+  { num:'1', cod:'var formulario = document.querySelector("#cadastro");', txt:'Pede ao navegador o elemento cujo <code>id</code> é <code>cadastro</code>. O resultado é guardado numa variável chamada <code>formulario</code>. É o formulário inteiro.' },
+  { num:'2', cod:'var resultado = document.querySelector("#resultado");', txt:'Pede o elemento <code>&lt;pre id="resultado"&gt;</code>, onde o texto do JSON será exibido. Também guardado numa variável.' },
+  { num:'3', cod:'formulario.addEventListener("submit", function(evento) {', txt:'Diz: "quando o formulário for enviado (evento <code>submit</code>), execute o que vem a seguir". A parte <code>function(evento)</code> é uma função anônima que recebe como parâmetro o próprio evento de envio.' },
+  { num:'4', cod:'  evento.preventDefault();', txt:'Impede o comportamento padrão do navegador (que seria recarregar a página ou tentar enviar para o servidor). É isso que permite o JavaScript tratar os dados antes de qualquer envio.' },
+  { num:'5', cod:'  var dados = {', txt:'Começa a montar um objeto JavaScript — um pacote com pares "chave: valor". Esse objeto vai virar o JSON depois.' },
+  { num:'6', cod:'    nome: formulario.nome.value,', txt:'Cria a chave <code>nome</code> dentro do objeto. <code>formulario.nome</code> acessa o input cujo <code>name="nome"</code>. <code>.value</code> pega o texto digitado. Se você não digitou nada, o valor é uma string vazia.' },
+  { num:'7', cod:'    email: formulario.email.value', txt:'Mesma lógica para o e-mail. Aqui <code>formulario.email</code> acessa o input com <code>name="email"</code>.' },
+  { num:'8', cod:'  };', txt:'Fecha o objeto. Neste ponto, <code>dados</code> é um objeto com <code>{ nome: "...", email: "..." }</code>.' },
+  { num:'9', cod:'  localStorage.setItem("cadastro", JSON.stringify(dados));', txt:'Duas ações em uma linha. Primeiro, <code>JSON.stringify(dados)</code> transforma o objeto em texto no formato JSON. Depois, <code>localStorage.setItem("cadastro", texto)</code> guarda esse texto no armário do navegador, sob a chave <code>cadastro</code>. É a gravação.' },
+  { num:'10', cod:'  resultado.textContent = localStorage.getItem("cadastro");', txt:'Recupera o texto guardado (<code>getItem</code>) e joga no elemento "resultado" como texto puro. Você vê o JSON na tela, prova de que foi guardado.' },
+  { num:'11', cod:'});', txt:'Fecha a função e o <code>addEventListener</code>. Tudo o que está entre <code>{</code> e <code>}</code> acontece a cada <code>submit</code>.' }
+];
+
+var CHAVE_STORAGE = 'tema5-inscricao-evento';
+
+function lerDadosStorage(){
+  try {
+    var raw = localStorage.getItem(CHAVE_STORAGE);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e){ return null; }
+}
+
+function escreverPainelStorage(){
+  var view = document.getElementById('storage-view');
+  var jsonView = document.getElementById('json-view');
+  if (!view || !jsonView) return;
+  var dados = lerDadosStorage();
+  if (!dados){
+    view.innerHTML = '<span class="storage-vazio">Nenhum dado salvo ainda. Preencha o formulário e clique em "Salvar".</span>';
+    jsonView.innerHTML = '<span class="storage-vazio">O JSON aparecerá aqui depois de salvar.</span>';
+    return;
+  }
+  var html = '<div class="storage-item"><span class="storage-key">' + CHAVE_STORAGE + '</span><span class="storage-value">' + esc(JSON.stringify(dados, null, 2)) + '</span></div>';
+  view.innerHTML = html;
+  jsonView.innerHTML = '<span class="storage-value">' + esc(JSON.stringify(dados, null, 2)) + '</span>';
+}
+
+function preencherFormularioComStorage(){
+  var dados = lerDadosStorage();
+  if (!dados) return;
+  var sNome = document.getElementById('s-nome');
+  var sEmail = document.getElementById('s-email');
+  if (sNome && dados.nome) sNome.value = dados.nome;
+  if (sEmail && dados.email) sEmail.value = dados.email;
+  if (dados.turno){
+    var radioTurno = document.querySelector('input[name="s-turno"][value="' + dados.turno + '"]');
+    if (radioTurno) radioTurno.checked = true;
+  }
+  if (dados.presenca){
+    var radioPresenca = document.querySelector('input[name="s-presenca"][value="' + dados.presenca + '"]');
+    if (radioPresenca) radioPresenca.checked = true;
+  }
+}
+
+function salvarNoStorage(){
+  var nome = document.getElementById('s-nome').value.trim();
+  var email = document.getElementById('s-email').value.trim();
+  var turnoEl = document.querySelector('input[name="s-turno"]:checked');
+  var presencaEl = document.querySelector('input[name="s-presenca"]:checked');
+  if (!nome || !email){
+    toast('⚠️ Preencha nome e e-mail antes de salvar.');
+    return;
+  }
+  var dados = {
+    nome: nome,
+    email: email,
+    turno: turnoEl ? turnoEl.value : '',
+    presenca: presencaEl ? presencaEl.value : ''
+  };
+  localStorage.setItem(CHAVE_STORAGE, JSON.stringify(dados));
+  escreverPainelStorage();
+  toast('💾 Salvo! Recarregue a página (F5) para ver que persiste.');
+}
+
+function apagarStorage(){
+  if (!confirm('Apagar os dados guardados? Só afeta este navegador.')) return;
+  localStorage.removeItem(CHAVE_STORAGE);
+  escreverPainelStorage();
+  toast('🗑️ Dados apagados.');
+}
+
+var MISSOES = [
+  { id:'m1', titulo:'Missão 1 — Campo de nome',
+    desc:'Crie um <code>&lt;label for="nome"&gt;</code> e um <code>&lt;input type="text" id="nome" name="nome"&gt;</code>. Teste no navegador: ao clicar no rótulo, o campo deve ganhar foco.' },
+  { id:'m2', titulo:'Missão 2 — Campo de e-mail',
+    desc:'Adicione <code>&lt;label for="email"&gt;</code> e <code>&lt;input type="email" id="email" name="email"&gt;</code>. Teste digitando um e-mail sem "@": o navegador reclama sozinho.' },
+  { id:'m3', titulo:'Missão 3 — Escolha do turno',
+    desc:'Use três <code>&lt;input type="radio" name="turno"&gt;</code> com valores <code>manha</code>, <code>tarde</code> e <code>noite</code>. Teste: só uma fica marcada por vez (porque todos têm o mesmo <code>name</code>).' },
+  { id:'m4', titulo:'Missão 4 — Confirmação de presença',
+    desc:'Adicione dois <code>&lt;input type="radio" name="presenca"&gt;</code> com valores <code>sim</code> e <code>nao</code>. Agrupe em volta deles um <code>&lt;fieldset&gt;</code> com <code>&lt;legend&gt;Confirma presença?&lt;/legend&gt;</code>.' },
+  { id:'m5', titulo:'Missão 5 — Reunir tudo em um &lt;form&gt;',
+    desc:'Envolva todos os campos em <code>&lt;form action="/inscricao" method="post"&gt;</code> e adicione <code>&lt;button type="submit"&gt;Enviar&lt;/button&gt;</code>. Teste o envio. Em arquivo local, o navegador reclama do destino — é o comportamento esperado.' }
+];
+
+function renderMissoes(){
+  var lista = document.getElementById('mission-list');
+  if (!lista) return;
+  var salvas = {};
+  try { salvas = JSON.parse(localStorage.getItem('tema5-missoes') || '{}'); } catch(e){ salvas = {}; }
+  lista.innerHTML = '';
+  MISSOES.forEach(function(m){
+    var el = document.createElement('div');
+    el.className = 'mission-item' + (salvas[m.id] ? ' concluida' : '');
+    el.innerHTML =
+      '<div class="checkbox"></div>' +
+      '<div class="info">' +
+        '<strong>' + m.titulo + '</strong>' +
+        '<p>' + m.desc + '</p>' +
+      '</div>';
+    el.querySelector('.checkbox').addEventListener('click', function(){
+      var estado = !el.classList.contains('concluida');
+      el.classList.toggle('concluida', estado);
+      salvas[m.id] = estado;
+      try { localStorage.setItem('tema5-missoes', JSON.stringify(salvas)); } catch(e){}
+      atualizarContadorMissoes();
+    });
+    lista.appendChild(el);
+  });
+  atualizarContadorMissoes();
+}
+
+function atualizarContadorMissoes(){
+  var total = MISSOES.length;
+  var concluidas = document.querySelectorAll('.mission-item.concluida').length;
+  var cont = document.getElementById('missao-contador');
+  var barra = document.getElementById('missao-barra');
+  if (cont) cont.textContent = concluidas + '/' + total + ' missões concluídas';
+  if (barra) barra.style.width = ((concluidas / total) * 100) + '%';
+}
+
+var QUESTOES = [
+  {
+    pergunta: 'Qual é a função do atributo <code>name</code> em um campo de formulário?',
+    opcoes: [
+      { l:'a', t:'Define a cor do campo.' },
+      { l:'b', t:'Identifica o dado no envio. Sem name, o valor não é transmitido.' },
+      { l:'c', t:'Define o tipo do campo.' },
+      { l:'d', t:'Aplica o rótulo visível ao usuário.' }
+    ],
+    correta:'b',
+    explicacao:'name é a identidade do dado que viaja. id é a identidade do elemento na página. Sem name, o dado não vai.'
+  },
+  {
+    pergunta: 'Quando usamos <code>&lt;label for="nome"&gt;</code>, o "nome" ali deve corresponder a quê?',
+    opcoes: [
+      { l:'a', t:'Ao atributo name do campo.' },
+      { l:'b', t:'Ao atributo id do campo.' },
+      { l:'c', t:'Ao texto do placeholder.' },
+      { l:'d', t:'Ao type do campo.' }
+    ],
+    correta:'b',
+    explicacao:'for aponta para o id. É essa associação que torna o campo acessível a leitores de tela.'
+  },
+  {
+    pergunta: 'Você testa o arquivo <code>01_get.html</code> e digita "Ana". O que acontece na barra de endereços ao clicar em Enviar?',
+    opcoes: [
+      { l:'a', t:'A URL fica limpa, sem parâmetros.' },
+      { l:'b', t:'A URL ganha <code>?nome=Ana</code>, mostrando o valor enviado.' },
+      { l:'c', t:'O navegador abre uma nova aba.' },
+      { l:'d', t:'O navegador baixa um arquivo chamado dados.json.' }
+    ],
+    correta:'b',
+    explicacao:'GET coloca os dados na URL. O par "name=valor" entra depois do sinal de interrogação.'
+  },
+  {
+    pergunta: 'Você testa o arquivo <code>02_post.html</code> em arquivo local e digita "Ana". O que acontece?',
+    opcoes: [
+      { l:'a', t:'A URL ganha <code>?nome=Ana</code>, igual ao GET.' },
+      { l:'b', t:'Os dados aparecem na URL e no corpo, simultaneamente.' },
+      { l:'c', t:'A URL fica limpa, mas o navegador reclama porque não há servidor para receber o POST.' },
+      { l:'d', t:'O navegador exibe um alerta perguntando para onde enviar.' }
+    ],
+    correta:'c',
+    explicacao:'POST envia no corpo. Sem um destino preparado para receber, o navegador informa que a requisição não pôde ser completada.'
+  },
+  {
+    pergunta: 'POST é automaticamente mais seguro que GET?',
+    opcoes: [
+      { l:'a', t:'Sim, porque criptografa os dados.' },
+      { l:'b', t:'Sim, desde que o formulário tenha <code>type="password"</code>.' },
+      { l:'c', t:'Não. Ambos trafegam em claro. A proteção real vem do HTTPS.' },
+      { l:'d', t:'Não, porque nenhum dos dois transmite dados.' }
+    ],
+    correta:'c',
+    explicacao:'POST é preferível para login por outros motivos (não fica no histórico, não fica na URL visível), mas criptografia de transporte é papel do HTTPS.'
+  },
+  {
+    pergunta: 'O que o <code>localStorage</code> armazena?',
+    opcoes: [
+      { l:'a', t:'Objetos JavaScript diretamente.' },
+      { l:'b', t:'Apenas texto. Objetos precisam virar texto antes, via <code>JSON.stringify</code>.' },
+      { l:'c', t:'Arquivos grandes, incluindo imagens.' },
+      { l:'d', t:'Um banco de dados relacional pequeno.' }
+    ],
+    correta:'b',
+    explicacao:'localStorage só guarda strings. Por isso o objeto precisa ser convertido em texto antes de entrar e reconstruído com JSON.parse depois.'
+  },
+  {
+    pergunta: 'O que faz a linha <code>JSON.stringify(dados)</code>?',
+    opcoes: [
+      { l:'a', t:'Envia o objeto para o servidor.' },
+      { l:'b', t:'Transforma o objeto JavaScript em texto no formato JSON.' },
+      { l:'c', t:'Remove campos vazios.' },
+      { l:'d', t:'Cria um formulário automaticamente.' }
+    ],
+    correta:'b',
+    explicacao:'stringify = transformar em string. É o passo necessário antes de gravar em qualquer armazenamento baseado em texto.'
+  },
+  {
+    pergunta: 'O <code>localStorage</code> é compartilhado entre todos os usuários de um site?',
+    opcoes: [
+      { l:'a', t:'Sim, todos os acessos veem os mesmos dados.' },
+      { l:'b', t:'Não. É por navegador e por site. Cada usuário tem o próprio armário.' },
+      { l:'c', t:'Sim, mas só se o site estiver em HTTPS.' },
+      { l:'d', t:'Depende do método GET ou POST usado no envio.' }
+    ],
+    correta:'b',
+    explicacao:'localStorage é local ao navegador. Não viaja para outros computadores, não é sincronizado.'
+  },
+  {
+    pergunta: 'O que a função <code>evento.preventDefault()</code> faz no script do formulário?',
+    opcoes: [
+      { l:'a', t:'Impede a recarga da página no envio, permitindo que o JavaScript trate os dados.' },
+      { l:'b', t:'Apaga todos os dados já guardados.' },
+      { l:'c', t:'Esconde o formulário do usuário.' },
+      { l:'d', t:'Envia os dados para um servidor remoto.' }
+    ],
+    correta:'a',
+    explicacao:'Sem preventDefault, o navegador tentaria enviar o formulário e recarregar. Com preventDefault, você toma o controle do fluxo.'
+  },
+  {
+    pergunta: 'Qual é a sequência correta de gravação de um objeto em localStorage?',
+    opcoes: [
+      { l:'a', t:'getItem → JSON.parse → objeto → enviar ao servidor.' },
+      { l:'b', t:'objeto → JSON.stringify → setItem (string). Depois: getItem → JSON.parse → objeto.' },
+      { l:'c', t:'objeto → enviar direto ao localStorage sem conversão.' },
+      { l:'d', t:'setItem → objeto → getItem em ordem invertida.' }
+    ],
+    correta:'b',
+    explicacao:'Gravação: objeto → stringify → setItem. Leitura: getItem → parse → objeto.'
+  }
+];
+
+var respostas = {};
+
+function renderQuestoes(){
+  var cont = document.getElementById('container-questoes');
+  if (!cont) return;
+  cont.innerHTML = '';
+  QUESTOES.forEach(function(q, idx){
+    var div = document.createElement('div');
+    div.className = 'question';
+    div.id = 'q' + (idx + 1);
+    var header = document.createElement('div');
+    header.className = 'question-header';
+    header.innerHTML = '<span class="question-number">' + (idx + 1) + '</span><div>' + q.pergunta + '</div>';
+    div.appendChild(header);
+    var opts = document.createElement('div');
+    opts.className = 'options';
+    q.opcoes.forEach(function(op){
+      var opt = document.createElement('div');
+      opt.className = 'option';
+      opt.dataset.letra = op.l;
+      var radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'q' + (idx + 1);
+      radio.value = op.l;
+      var lbl = document.createElement('label');
+      lbl.innerHTML = '<strong>' + op.l + ')</strong> ' + op.t;
+      opt.appendChild(radio);
+      opt.appendChild(lbl);
+      opt.addEventListener('click', function(ev){ ev.preventDefault(); marcar(idx + 1, op.l, opt); });
+      opts.appendChild(opt);
+    });
+    div.appendChild(opts);
+    var feed = document.createElement('div');
+    feed.className = 'feedback-imediato';
+    feed.id = 'feed-q' + (idx + 1);
+    div.appendChild(feed);
+    cont.appendChild(div);
+  });
+}
+
+function marcar(num, letra, opt){
+  if (respostas[num]) return;
+  var div = document.getElementById('q' + num);
+  if (!div) return;
+  div.querySelectorAll('.option').forEach(function(o){
+    o.classList.add('disabled');
+    var r = o.querySelector('input');
+    if (r) r.checked = false;
+  });
+  opt.classList.add('selecionada');
+  var q = QUESTOES[num - 1];
+  var acertou = (letra === q.correta);
+  var feed = document.getElementById('feed-q' + num);
+  if (acertou){
+    opt.classList.add('correct');
+    if (feed){ feed.classList.add('mostrar','ok'); feed.innerHTML = '✅ <strong>Correto!</strong> ' + q.explicacao; }
+  } else {
+    opt.classList.add('wrong');
+    var corretaEl = div.querySelector('.option[data-letra="' + q.correta + '"]');
+    if (corretaEl) corretaEl.classList.add('correct');
+    if (feed){ feed.classList.add('mostrar','no'); feed.innerHTML = '❌ <strong>Ainda não.</strong> ' + q.explicacao; }
+  }
+  respostas[num] = letra;
+  atualizarProgresso();
+}
+
+function atualizarProgresso(){
+  var total = QUESTOES.length;
+  var feitas = Object.keys(respostas).length;
+  var txt = document.getElementById('txt-progresso');
+  var bar = document.getElementById('fill-progresso');
+  var btn = document.getElementById('btn-finalizar');
+  if (txt) txt.textContent = feitas + ' de ' + total;
+  if (bar) bar.style.width = ((feitas / total) * 100) + '%';
+  if (btn) btn.disabled = (feitas < total);
+}
+
+function finalizar(){
+  var acertos = 0;
+  var html = '';
+  QUESTOES.forEach(function(q, idx){
+    var num = idx + 1;
+    var resp = respostas[num];
+    if (resp === q.correta) acertos++;
+  });
+  var pct = Math.round((acertos / QUESTOES.length) * 100);
+  var diag = pct >= 85 ? '🏆 Excelente! Você entendeu o percurso do dado.'
+           : pct >= 65 ? '👏 Bom resultado. Revise os pontos que errou.'
+           : '📖 Volte às abas 2, 3 e 4 para reforçar a base.';
+  html = '<div style="text-align:center;padding:16px;background:#f0fdf4;border-radius:10px;margin-bottom:12px;">' +
+           '<div style="font-size:1.6rem;font-weight:900;color:#15803d;">' + acertos + ' / ' + QUESTOES.length + '</div>' +
+           '<div style="color:#166534;font-weight:700;">Aproveitamento: ' + pct + '% — ' + diag + '</div>' +
+         '</div>';
+  QUESTOES.forEach(function(q, idx){
+    var num = idx + 1;
+    var resp = respostas[num] || '—';
+    var ok = (resp === q.correta);
+    html += '<div style="padding:8px 0;border-bottom:1px solid #e2e8f0;color:' + (ok ? '#15803d' : '#b91c1c') + ';font-size:.88rem;">' +
+              (ok ? '✅' : '❌') + ' Q' + num + ' — ' + (ok ? 'Correta' : 'Marcou (' + resp + '), gabarito (' + q.correta + ')') +
+            '</div>';
+  });
+  var cont = document.getElementById('resultado-conteudo');
+  if (cont) cont.innerHTML = html;
+  document.getElementById('resultado-final').classList.add('mostrar');
+  document.getElementById('resultado-final').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function limpar(){
+  if (!confirm('Limpar todas as respostas?')) return;
+  respostas = {};
+  document.querySelectorAll('.option').forEach(function(o){
+    o.classList.remove('selecionada','correct','wrong','disabled');
+    var r = o.querySelector('input');
+    if (r) r.checked = false;
+  });
+  document.querySelectorAll('.feedback-imediato').forEach(function(f){
+    f.classList.remove('mostrar','ok','no');
+    f.innerHTML = '';
+  });
+  document.getElementById('resultado-final').classList.remove('mostrar');
+  atualizarProgresso();
+}
+
+function copiarFallback(texto){
+  var ta = document.createElement('textarea');
+  ta.value = texto;
+  ta.setAttribute('readonly','');
+  ta.style.position = 'fixed';
+  ta.style.top = '-1000px';
+  document.body.appendChild(ta);
+  ta.select();
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch(e){ ok = false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function copiarTexto(texto, botao){
+  if (!texto) return;
+  function fim(ok){
+    if (ok){
+      toast('✅ Copiado!');
+      if (botao){
+        var orig = botao.textContent;
+        botao.textContent = '✅ Copiado!';
+        setTimeout(function(){ botao.textContent = orig; }, 1600);
+      }
+    } else toast('⚠️ Selecione e copie manualmente.');
+  }
+  if (navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(texto).then(function(){ fim(true); }).catch(function(){ fim(copiarFallback(texto)); });
+  } else fim(copiarFallback(texto));
+}
+
+function abrirPreview(html, targetId){
+  var alvo = document.getElementById(targetId);
+  if (!alvo) return;
+  var antigo = alvo.querySelector('.preview-inline');
+  if (antigo) antigo.remove();
+  var caixa = document.createElement('div');
+  caixa.className = 'preview-inline';
+  var header = document.createElement('div');
+  header.className = 'preview-header';
+  header.innerHTML = '<span>🧪 Preview</span>';
+  var fechar = document.createElement('button');
+  fechar.type = 'button';
+  fechar.className = 'preview-close';
+  fechar.textContent = '✕ Fechar';
+  header.appendChild(fechar);
+  var iframe = document.createElement('iframe');
+  iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms');
+  iframe.setAttribute('title','Preview');
+  iframe.srcdoc = html;
+  caixa.appendChild(header);
+  caixa.appendChild(iframe);
+  alvo.appendChild(caixa);
+  fechar.addEventListener('click', function(){ caixa.remove(); });
+  caixa.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function baixarCodigo(nome, codigo){
+  var blob = new Blob([codigo], {type:'text/html;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = nome;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 30000);
+  toast('✅ Download iniciado.');
+}
+
+var toastTimer = null;
+function toast(msg){
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.display = 'block';
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display = 'none'; }, 3200);
+}
+
+function trocarAba(id, botao){
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+  botao.classList.add('active');
+  var alvo = document.getElementById(id);
+  if (alvo) alvo.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function montarExplicacaoJS(){
+  var cont = document.getElementById('js-linhas');
+  if (!cont) return;
+  var html = '';
+  JS_LINHAS.forEach(function(l){
+    html += '<div class="linha-explicacao">' +
+              '<div class="linha-num">' + esc(l.num) + '</div>' +
+              '<div class="linha-conteudo">' +
+                '<div class="linha-codigo">' + esc(l.cod) + '</div>' +
+                '<div class="linha-texto">' + l.txt + '</div>' +
+              '</div>' +
+            '</div>';
+  });
+  cont.innerHTML = html;
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+
+  var preG = document.getElementById('codigo-get');
+  if (preG) preG.textContent = CODIGO_GET;
+  var preP = document.getElementById('codigo-post');
+  if (preP) preP.textContent = CODIGO_POST;
+  var preS = document.getElementById('codigo-storage');
+  if (preS) preS.textContent = CODIGO_STORAGE;
+  var preF = document.getElementById('codigo-final');
+  if (preF) preF.textContent = CODIGO_FINAL;
+
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ trocarAba(btn.dataset.aba, btn); });
+  });
+
+  document.querySelectorAll('[data-copiar="get"]').forEach(function(b){ b.addEventListener('click', function(){ copiarTexto(CODIGO_GET, b); }); });
+  document.querySelectorAll('[data-copiar="post"]').forEach(function(b){ b.addEventListener('click', function(){ copiarTexto(CODIGO_POST, b); }); });
+  document.querySelectorAll('[data-copiar="storage"]').forEach(function(b){ b.addEventListener('click', function(){ copiarTexto(CODIGO_STORAGE, b); }); });
+  document.querySelectorAll('[data-copiar="final"]').forEach(function(b){ b.addEventListener('click', function(){ copiarTexto(CODIGO_FINAL, b); }); });
+
+  document.querySelectorAll('[data-preview="get"]').forEach(function(b){ b.addEventListener('click', function(){ abrirPreview(CODIGO_GET, 'preview-get'); }); });
+  document.querySelectorAll('[data-preview="post"]').forEach(function(b){ b.addEventListener('click', function(){ abrirPreview(CODIGO_POST, 'preview-post'); }); });
+  document.querySelectorAll('[data-preview="final"]').forEach(function(b){ b.addEventListener('click', function(){ abrirPreview(CODIGO_FINAL, 'preview-final'); }); });
+
+  document.querySelectorAll('[data-download="get"]').forEach(function(b){ b.addEventListener('click', function(){ baixarCodigo('01_get.html', CODIGO_GET); }); });
+  document.querySelectorAll('[data-download="post"]').forEach(function(b){ b.addEventListener('click', function(){ baixarCodigo('02_post.html', CODIGO_POST); }); });
+  document.querySelectorAll('[data-download="storage"]').forEach(function(b){ b.addEventListener('click', function(){ baixarCodigo('experimento-storage.html', CODIGO_STORAGE); }); });
+  document.querySelectorAll('[data-download="final"]').forEach(function(b){ b.addEventListener('click', function(){ baixarCodigo('formulario-final.html', CODIGO_FINAL); }); });
+
+  var btnSalvar = document.getElementById('btn-salvar');
+  if (btnSalvar) btnSalvar.addEventListener('click', salvarNoStorage);
+  var btnLimparD = document.getElementById('btn-limpar-dados');
+  if (btnLimparD) btnLimparD.addEventListener('click', apagarStorage);
+  var btnRec = document.getElementById('btn-recarregar-storage');
+  if (btnRec) btnRec.addEventListener('click', function(){ escreverPainelStorage(); toast('🔄 Recarregado.'); });
+  var btnApagar = document.getElementById('btn-apagar-storage');
+  if (btnApagar) btnApagar.addEventListener('click', apagarStorage);
+
+  escreverPainelStorage();
+  preencherFormularioComStorage();
+
+  montarExplicacaoJS();
+  renderMissoes();
+
+  renderQuestoes();
+  atualizarProgresso();
+  var btnFin = document.getElementById('btn-finalizar');
+  if (btnFin) btnFin.addEventListener('click', finalizar);
+  var btnLim = document.getElementById('btn-limpar-quiz');
+  if (btnLim) btnLim.addEventListener('click', limpar);
+
+  var btnTopo = document.getElementById('btn-topo');
+  if (btnTopo) btnTopo.addEventListener('click', function(){ window.scrollTo({top:0,behavior:'smooth'}); });
+});
+</script>
+</body>
+</html>

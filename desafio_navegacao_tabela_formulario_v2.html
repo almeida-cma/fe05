@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏫 Atividade Prática — Navegação, Lista, Tabela e Formulário</title>
+<style>
+  :root{
+    --bg-body:#06101c;
+    --surface-dark:#0f1b2d;
+    --surface-hover:#1b2a42;
+    --card-white:#ffffff;
+    --primary:#0369a1;
+    --primary-hover:#075985;
+    --primary-light:#38bdf8;
+    --accent:#0d9488;
+    --accent-light:#2dd4bf;
+    --text-dark:#0f172a;
+    --text-muted:#64748b;
+    --border-light:#e2e8f0;
+    --border-dark:#334155;
+    --radius-main:20px;
+    --transicao:all .25s ease;
+    --etapa-1:#0284c7;
+    --etapa-2:#0d9488;
+    --etapa-3:#7c3aed;
+    --etapa-4:#d97706;
+    --etapa-5:#16a34a;
+    --etapa-6:#dc2626;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(circle at 10% 15%,#062a3a 0%,#06101c 65%);
+    color:var(--text-dark);
+    min-height:100vh;
+    padding:24px 14px 90px;
+    line-height:1.6;
+  }
+  .container{max-width:1150px;margin:0 auto;}
+
+  .header{
+    background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 50%,#0d9488 100%);
+    border-radius:var(--radius-main);
+    padding:38px 24px;
+    margin-bottom:24px;
+    text-align:center;
+    color:#fff;
+    box-shadow:0 12px 35px rgba(3,105,161,.4);
+  }
+  .header h1{
+    font-size:2.1rem;
+    margin-bottom:8px;
+    letter-spacing:-.5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .header h1 span{color:#a7f3d0;}
+  .header p{opacity:.95;font-size:1.05rem;max-width:900px;margin:0 auto;}
+  .badge-group{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px;}
+  .badge{
+    background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.3);
+    padding:5px 14px;
+    border-radius:30px;
+    font-size:.75rem;
+    font-weight:700;
+    color:#fff;
+  }
+
+  .tabs-nav{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:8px;
+    margin-bottom:22px;
+  }
+  .tab-btn{
+    background:var(--surface-dark);
+    color:#94a3b8;
+    border:1px solid var(--border-dark);
+    padding:12px 18px;
+    border-radius:30px;
+    font-size:.88rem;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:var(--transicao);
+    font-family:inherit;
+  }
+  .tab-btn:hover{color:#fff;background:var(--surface-hover);}
+  .tab-btn.active{
+    background:linear-gradient(135deg,#075985,#0d9488);
+    color:#fff;
+    border-color:#2dd4bf;
+    box-shadow:0 0 16px rgba(13,148,136,.45);
+  }
+  .tab-content{display:none;animation:fadeIn .3s ease-out;}
+  .tab-content.active{display:block;}
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(6px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  .card{
+    background:var(--card-white);
+    border-radius:var(--radius-main);
+    padding:28px;
+    margin-bottom:24px;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+  }
+  .card h2{
+    color:#075985;
+    margin-bottom:14px;
+    border-left:5px solid var(--primary);
+    padding-left:12px;
+    font-size:1.45rem;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .card h3{
+    color:#0f172a;
+    margin:22px 0 10px 0;
+    font-size:1.15rem;
+    border-bottom:2px dashed #cbd5e1;
+    padding-bottom:6px;
+  }
+  .card p{color:#334155;margin-bottom:12px;font-size:.96rem;}
+  .card ul,.card ol{color:#334155;line-height:1.8;margin:8px 0 14px 25px;font-size:.95rem;}
+  .card li{margin-bottom:4px;}
+
+  .highlight-box{
+    padding:16px 20px;
+    border-radius:12px;
+    margin:14px 0;
+    font-size:.94rem;
+    line-height:1.7;
+  }
+  .highlight-box.blue{background:#e0f2fe;border-left:5px solid #0284c7;color:#0c4a6e;}
+  .highlight-box.amber{background:#fef3c7;border-left:5px solid #d97706;color:#78350f;}
+  .highlight-box.rose{background:#ffe4e6;border-left:5px solid #e11d48;color:#881337;}
+  .highlight-box.green{background:#dcfce7;border-left:5px solid #16a34a;color:#14532d;}
+  .highlight-box.purple{background:#ede9fe;border-left:5px solid #7c3aed;color:#4c1d95;}
+  .highlight-box code{
+    background:rgba(255,255,255,.85);
+    border:1px solid rgba(0,0,0,.15);
+    color:#0f172a;
+    padding:2px 6px;
+    border-radius:4px;
+    font-weight:800;
+    font-family:'Courier New',monospace;
+    font-size:.88em;
+  }
+
+  code{
+    background:#f1f5f9;
+    color:#0c4a6e;
+    padding:2px 6px;
+    border-radius:4px;
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    font-size:.88em;
+    border:1px solid var(--border-light);
+  }
+
+  /* =============== ÁRVORE DE ESTRUTURA =============== */
+  .arvore-estrutura{
+    background:#0a1420;
+    border-radius:14px;
+    padding:22px 24px;
+    margin:18px 0;
+    border:2px solid var(--border-dark);
+    font-family:'Courier New',monospace;
+    font-size:.88rem;
+    line-height:1.9;
+    overflow-x:auto;
+  }
+  .arvore-estrutura .indent-1{padding-left:20px;}
+  .arvore-estrutura .indent-2{padding-left:40px;}
+  .arvore-estrutura .indent-3{padding-left:60px;}
+  .arvore-estrutura .indent-4{padding-left:80px;}
+  .arvore-estrutura .tag-nome{color:#7dd3fc;font-weight:800;}
+  .arvore-estrutura .tag-attr{color:#fbbf24;}
+  .arvore-estrutura .tag-valor{color:#86efac;}
+  .arvore-estrutura .tag-texto{color:#f472b6;}
+  .arvore-estrutura .tag-obrigatoria::after{
+    content:'OBRIGATÓRIA';
+    background:#dc2626;
+    color:#fff;
+    font-size:.65rem;
+    padding:1px 6px;
+    border-radius:8px;
+    margin-left:8px;
+    font-weight:900;
+    vertical-align:middle;
+  }
+  .arvore-estrutura .tag-omitir{
+    color:#64748b;
+    font-style:italic;
+    font-size:.82rem;
+  }
+
+  /* =============== ETAPAS =============== */
+  .etapa-card{
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:20px;
+    background:#f8fafc;
+    border:2px solid var(--border-light);
+    position:relative;
+  }
+  .etapa-card::before{
+    content:attr(data-etapa);
+    position:absolute;
+    top:-14px;
+    left:20px;
+    background:var(--etapa-color, #0369a1);
+    color:#fff;
+    padding:5px 16px;
+    border-radius:20px;
+    font-size:.75rem;
+    font-weight:900;
+    letter-spacing:.5px;
+  }
+  .etapa-card h3{
+    margin-top:6px;
+    border:0;
+    padding:0;
+    color:#0f172a;
+    font-size:1.1rem;
+    margin-bottom:12px;
+  }
+  .etapa-card p{font-size:.93rem;}
+  .etapa-card ul,.etapa-card ol{font-size:.92rem;}
+
+  .etapa-card[data-num="1"]{--etapa-color:var(--etapa-1);}
+  .etapa-card[data-num="2"]{--etapa-color:var(--etapa-2);}
+  .etapa-card[data-num="3"]{--etapa-color:var(--etapa-3);}
+  .etapa-card[data-num="4"]{--etapa-color:var(--etapa-4);}
+  .etapa-card[data-num="5"]{--etapa-color:var(--etapa-5);}
+  .etapa-card[data-num="6"]{--etapa-color:var(--etapa-6);}
+
+  .sintaxe-box{
+    background:#0a1420;
+    color:#e2e8f0;
+    border-radius:10px;
+    padding:14px 18px;
+    font-family:'Courier New',monospace;
+    font-size:.84rem;
+    line-height:1.6;
+    overflow-x:auto;
+    white-space:pre;
+    margin:12px 0;
+    border-left:4px solid var(--etapa-color, #0369a1);
+  }
+  .sintaxe-box .tok-tag{color:#7dd3fc;}
+  .sintaxe-box .tok-attr{color:#fbbf24;}
+  .sintaxe-box .tok-string{color:#86efac;}
+  .sintaxe-box .tok-texto{color:#f472b6;}
+
+  /* =============== RESULTADO RENDERIZADO =============== */
+  .resultado-frame{
+    margin:18px 0;
+    border:2px solid var(--border-dark);
+    border-radius:14px;
+    overflow:hidden;
+    background:#0a1420;
+  }
+  .resultado-frame .frame-topo{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 16px;
+    background:#0f1b2d;
+    border-bottom:1px solid var(--border-dark);
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .resultado-frame .frame-topo .url-fake{
+    color:#cbd5e1;
+    font-family:monospace;
+    font-size:.82rem;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .resultado-frame .frame-topo .url-fake::before{content:'🌐';}
+  .resultado-frame .frame-topo .frame-acoes{display:flex;gap:6px;flex-wrap:wrap;}
+  .resultado-frame .frame-topo button{
+    background:#334155;
+    color:#f1f5f9;
+    border:none;
+    padding:5px 12px;
+    border-radius:6px;
+    font-size:.78rem;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+    transition:var(--transicao);
+  }
+  .resultado-frame .frame-topo button:hover{background:#475569;}
+  .resultado-frame .frame-topo button.btn-primario{background:#0284c7;color:#fff;}
+  .resultado-frame .frame-topo button.btn-primario:hover{background:#0369a1;}
+  .resultado-frame iframe{
+    width:100%;
+    height:820px;
+    border:none;
+    background:#fff;
+    display:block;
+  }
+
+  /* =============== CHECKLIST DE VALIDADE =============== */
+  .validacao-item{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:12px 16px;
+    background:#f8fafc;
+    border-radius:10px;
+    border-left:4px solid #0284c7;
+    margin-bottom:10px;
+    transition:var(--transicao);
+    cursor:pointer;
+  }
+  .validacao-item:hover{background:#f1f5f9;}
+  .validacao-item.concluido{
+    border-left-color:#16a34a;
+    background:#dcfce7;
+  }
+  .validacao-item .check-box{
+    width:24px;
+    height:24px;
+    border:2px solid #0284c7;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:900;
+    background:#fff;
+    flex-shrink:0;
+    margin-top:2px;
+    font-size:.85rem;
+  }
+  .validacao-item.concluido .check-box{
+    background:#16a34a;
+    border-color:#16a34a;
+  }
+  .validacao-item.concluido .check-box::after{content:'✓';}
+  .validacao-item .info{flex:1;}
+  .validacao-item .info strong{
+    display:block;
+    color:#0f172a;
+    font-size:.92rem;
+    margin-bottom:3px;
+  }
+  .validacao-item .info p{
+    font-size:.85rem;
+    color:#475569;
+    margin:0;
+    line-height:1.55;
+  }
+  .validacao-item .info code{font-size:.82em;}
+
+  .validacao-progresso{
+    background:#0f1b2d;
+    color:#fff;
+    border-radius:10px;
+    padding:14px 20px;
+    margin-bottom:18px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .validacao-progresso span{font-size:.9rem;font-weight:700;}
+  .validacao-barra{
+    flex:1;
+    min-width:140px;
+    height:10px;
+    background:#334155;
+    border-radius:5px;
+    overflow:hidden;
+  }
+  .validacao-barra-preenchimento{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#0284c7,#0d9488);
+    transition:width .4s;
+  }
+
+  /* =============== TESTES OBRIGATÓRIOS =============== */
+  .teste-item{
+    background:#fef3c7;
+    border-left:4px solid #d97706;
+    border-radius:10px;
+    padding:14px 18px;
+    margin-bottom:12px;
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
+  .teste-num{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    background:#d97706;
+    color:#fff;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    font-size:.85rem;
+  }
+  .teste-corpo{flex:1;}
+  .teste-corpo strong{
+    display:block;
+    color:#78350f;
+    font-size:.94rem;
+    margin-bottom:3px;
+  }
+  .teste-corpo p{
+    margin:0;
+    font-size:.88rem;
+    color:#78350f;
+    line-height:1.6;
+  }
+
+  .toast-notificacao{
+    position:fixed;
+    bottom:24px;
+    right:24px;
+    background:#0d9488;
+    color:#fff;
+    padding:12px 20px;
+    border-radius:10px;
+    font-weight:bold;
+    font-size:.85rem;
+    box-shadow:0 10px 25px rgba(0,0,0,.3);
+    display:none;
+    z-index:9999;
+    animation:slideUp .3s ease;
+    max-width:340px;
+    line-height:1.5;
+  }
+  @keyframes slideUp{
+    from{transform:translateY(20px);opacity:0;}
+    to{transform:translateY(0);opacity:1;}
+  }
+  .btn-top{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:50px;
+    cursor:pointer;
+    font-size:12px;
+    font-weight:700;
+    box-shadow:0 4px 15px rgba(0,0,0,.25);
+    z-index:100;
+  }
+
+  @media (max-width:768px){
+    .header h1{font-size:1.6rem;}
+    .card{padding:18px 14px;}
+    .tab-btn{padding:10px 14px;font-size:.8rem;}
+    .resultado-frame iframe{height:640px;}
+    .arvore-estrutura{font-size:.78rem;padding:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="inicio">
+  <header class="header">
+    <h1>🏫 Atividade Prática</h1>
+    <p>Navegação, lista, tabela e formulário HTML — usando apenas HTML puro, sem CSS nem JavaScript</p>
+    <div class="badge-group">
+      <span class="badge">🧭 Navegação com #âncoras</span>
+      <span class="badge">📋 Lista ordenada</span>
+      <span class="badge">📊 Tabela com borda</span>
+      <span class="badge">📝 Formulário POST</span>
+      <span class="badge">✅ Validação</span>
+    </div>
+  </header>
+
+  <nav class="tabs-nav">
+    <button type="button" class="tab-btn active" data-aba="aba-visao">🎯 1. Visão geral</button>
+    <button type="button" class="tab-btn" data-aba="aba-etapas">📐 2. Etapas do código</button>
+    <button type="button" class="tab-btn" data-aba="aba-resultado">👁️ 3. Resultado renderizado</button>
+    <button type="button" class="tab-btn" data-aba="aba-validacao">✅ 4. Validação</button>
+    <button type="button" class="tab-btn" data-aba="aba-testes">🧪 5. Testes obrigatórios</button>
+  </nav>
+
+  <!-- ============ ABA 1 — VISÃO GERAL ============ -->
+  <div id="aba-visao" class="tab-content active">
+    <section class="card">
+      <h2>🎯 O que você vai construir</h2>
+
+      <p>Uma página HTML completa sobre <strong>atividades escolares</strong>, contendo uma área de navegação com três links internos, uma lista numerada de etapas, uma tabela de atividades disponíveis e um formulário de inscrição que envia dados por POST.</p>
+
+      <div class="highlight-box blue">
+        <strong>📋 Regras fundamentais:</strong>
+        <ul style="margin:8px 0 0 22px;color:#0c4a6e;">
+          <li>Utilize <strong>somente HTML</strong>.</li>
+          <li><strong>Não utilize CSS</strong> em nenhuma forma (nem <code>style</code>, nem arquivo externo).</li>
+          <li><strong>Não utilize JavaScript</strong>.</li>
+          <li><strong>Não utilize a tag</strong> <code>&lt;section&gt;</code>.</li>
+          <li>Salve o arquivo com o nome exato <code>index.html</code>.</li>
+        </ul>
+      </div>
+
+      <h3>🏗️ Mapa conceitual da estrutura</h3>
+      <p>Este é o mapa do que você deve chegar — a hierarquia dos elementos, sem os textos e valores que você mesmo vai escrever. As tags marcadas como <strong>OBRIGATÓRIA</strong> são exigidas explicitamente pelo enunciado.</p>
+
+      <div class="arvore-estrutura">
+        <div class="indent-1"><span class="tag-nome">&lt;!DOCTYPE html&gt;</span></div>
+        <div class="indent-1"><span class="tag-nome">&lt;html</span> <span class="tag-attr">lang</span>=<span class="tag-valor">"pt-BR"</span><span class="tag-nome">&gt;</span></div>
+        <div class="indent-2"><span class="tag-nome">&lt;head&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;meta</span> <span class="tag-attr">charset</span>=<span class="tag-valor">"UTF-8"</span><span class="tag-nome">&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;title&gt;</span><span class="tag-omitir">[título da aba — veja a etapa 1]</span><span class="tag-nome">&lt;/title&gt;</span></div>
+        <div class="indent-2"><span class="tag-nome">&lt;/head&gt;</span></div>
+        <div class="indent-2"><span class="tag-nome">&lt;body&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;h1&gt;</span><span class="tag-omitir">[texto da etapa 1]</span><span class="tag-nome">&lt;/h1&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;nav&gt;</span> <span class="tag-obrigatoria"></span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;a</span> <span class="tag-attr">href</span>=<span class="tag-valor">"#…"</span><span class="tag-nome">&gt;</span><span class="tag-omitir">[3 links internos]</span><span class="tag-nome">&lt;/a&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;/nav&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;h2</span> <span class="tag-attr">id</span>=<span class="tag-valor">"…"</span><span class="tag-nome">&gt;</span><span class="tag-omitir">[título da etapa 3]</span><span class="tag-nome">&lt;/h2&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;ol&gt;</span> <span class="tag-obrigatoria"></span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;li&gt;</span><span class="tag-omitir">[3 itens]</span><span class="tag-nome">&lt;/li&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;/ol&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;p&gt;</span><span class="tag-omitir">[5 parágrafos]</span><span class="tag-nome">&lt;/p&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;h2</span> <span class="tag-attr">id</span>=<span class="tag-valor">"…"</span><span class="tag-nome">&gt;</span><span class="tag-omitir">[título da etapa 4]</span><span class="tag-nome">&lt;/h2&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;table</span> <span class="tag-attr">border</span>=<span class="tag-valor">"1"</span><span class="tag-nome">&gt;</span> <span class="tag-obrigatoria"></span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;tr&gt;</span> <span class="tag-nome">&lt;th&gt;</span>…<span class="tag-nome">&lt;/th&gt;</span> <span class="tag-nome">&lt;th&gt;</span>…<span class="tag-nome">&lt;/th&gt;</span> <span class="tag-nome">&lt;/tr&gt;</span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;tr&gt;</span> <span class="tag-nome">&lt;td&gt;</span>…<span class="tag-nome">&lt;/td&gt;</span> <span class="tag-nome">&lt;td&gt;</span>…<span class="tag-nome">&lt;/td&gt;</span> <span class="tag-nome">&lt;/tr&gt;</span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;tr&gt;</span> <span class="tag-nome">&lt;td&gt;</span>…<span class="tag-nome">&lt;/td&gt;</span> <span class="tag-nome">&lt;td&gt;</span>…<span class="tag-nome">&lt;/td&gt;</span> <span class="tag-nome">&lt;/tr&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;/table&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;p&gt;</span><span class="tag-omitir">[5 parágrafos]</span><span class="tag-nome">&lt;/p&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;h2</span> <span class="tag-attr">id</span>=<span class="tag-valor">"…"</span><span class="tag-nome">&gt;</span><span class="tag-omitir">[título da etapa 5]</span><span class="tag-nome">&lt;/h2&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;form</span> <span class="tag-attr">action</span>=<span class="tag-valor">"…"</span> <span class="tag-attr">method</span>=<span class="tag-valor">"post"</span><span class="tag-nome">&gt;</span> <span class="tag-obrigatoria"></span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;label&gt;</span> + <span class="tag-nome">&lt;input&gt;</span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;br&gt;&lt;br&gt;</span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;label&gt;</span> + <span class="tag-nome">&lt;select&gt;</span> + <span class="tag-nome">&lt;option&gt;</span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;br&gt;&lt;br&gt;</span></div>
+        <div class="indent-4"><span class="tag-nome">&lt;button&gt;</span></div>
+        <div class="indent-3"><span class="tag-nome">&lt;/form&gt;</span></div>
+        <div class="indent-2"><span class="tag-nome">&lt;/body&gt;</span></div>
+        <div class="indent-1"><span class="tag-nome">&lt;/html&gt;</span></div>
+      </div>
+
+      <div class="highlight-box amber">
+        <strong>⚠️ Leia com atenção o que este mapa NÃO entrega:</strong> ele mostra apenas quais tags existem e em que ordem hierárquica. Os <strong>textos, atributos, valores e a sintaxe completa</strong> de cada parte estão descritos no enunciado (aba 2). Você vai construir linha a linha, consultando o enunciado e não um código pronto.
+      </div>
+
+      <div class="highlight-box rose">
+        <strong>🚫 O que você não deve usar de forma alguma:</strong>
+        <ul style="margin:8px 0 0 22px;color:#881337;">
+          <li>Nenhum atributo <code>style</code> em nenhuma tag.</li>
+          <li>Nenhuma tag <code>&lt;link rel="stylesheet"&gt;</code>.</li>
+          <li>Nenhuma tag <code>&lt;script&gt;</code>.</li>
+          <li>Nenhuma tag <code>&lt;section&gt;</code>.</li>
+        </ul>
+      </div>
+
+      <h3>📌 Por que cada requisito existe</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin:16px 0;">
+        <thead>
+          <tr style="background:linear-gradient(135deg,#0c4a6e,#0d9488);color:#fff;">
+            <th style="padding:12px;text-align:left;">Requisito</th>
+            <th style="padding:12px;text-align:left;">O que prova</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;"><code>&lt;nav&gt;</code> com <code>href="#id"</code></td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Você sabe ligar um link ao <code>id</code> de um elemento da própria página — o mecanismo de âncora.</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;"><code>&lt;ol&gt;</code> com <code>&lt;li&gt;</code></td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Você distingue lista ordenada (<code>&lt;ol&gt;</code>) de lista não ordenada (<code>&lt;ul&gt;</code>) e sabe que a numeração é gerada pelo navegador.</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;"><code>&lt;table border="1"&gt;</code></td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Você entende a hierarquia <code>table</code> → <code>tr</code> → <code>th</code>/<code>td</code> e como o atributo <code>border</code> desenha a grade sem CSS.</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;"><code>&lt;form method="post"&gt;</code></td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Você sabe que o formulário pode enviar dados a um destino externo e que o <code>method</code> altera o modo como os dados viajam.</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;"><code>&lt;label for="&gt;</code> + <code>&lt;input id=""&gt;</code></td>
+            <td style="padding:10px;">Você entende o pareamento entre rótulo e campo — que é o que garante acessibilidade por leitor de tela e clique.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- ============ ABA 2 — ETAPAS ============ -->
+  <div id="aba-etapas" class="tab-content">
+    <section class="card">
+      <h2>📐 Construção em 6 etapas</h2>
+      <p>Cada etapa abaixo corresponde a uma parte do código que você vai escrever em <code>index.html</code>. Siga na ordem — as etapas se completam.</p>
+
+      <div class="etapa-card" data-etapa="ETAPA 1" data-num="1">
+        <h3>🏗️ Estrutura inicial do documento</h3>
+        <p>Crie um arquivo chamado <code>index.html</code>. Defina o idioma como <code>pt-BR</code>, utilize <code>&lt;meta charset="UTF-8"&gt;</code> e o título da aba como <strong>Atividades escolares</strong>. Dentro do <code>&lt;body&gt;</code>, use <code>&lt;h1&gt;</code> com o mesmo texto.</p>
+
+        <div class="highlight-box blue" style="margin-top:12px;">
+          <strong>O que você precisa saber antes de começar:</strong>
+          <ul style="margin:6px 0 0 22px;">
+            <li><code>&lt;!DOCTYPE html&gt;</code> é a primeira linha e avisa o navegador que é um documento HTML5.</li>
+            <li>Todo o <code>&lt;head&gt;</code> é invisível ao usuário — só o <code>&lt;body&gt;</code> aparece na tela.</li>
+            <li><code>charset="UTF-8"</code> informa o conjunto de caracteres. Sem ele, acentos aparecem errados.</li>
+            <li>O <code>&lt;title&gt;</code> aparece na aba do navegador, não na página.</li>
+          </ul>
+        </div>
+
+        <p><strong>Não confunda:</strong> o título da aba (dentro do <code>&lt;title&gt;</code>, no <code>&lt;head&gt;</code>) é diferente do cabeçalho da página (dentro do <code>&lt;h1&gt;</code>, no <code>&lt;body&gt;</code>). Nesta etapa, ambos têm o mesmo texto.</p>
+      </div>
+
+      <div class="etapa-card" data-etapa="ETAPA 2" data-num="2">
+        <h3>🧭 Navegação com <code>&lt;nav&gt;</code></h3>
+        <p>Logo depois do <code>&lt;h1&gt;</code>, crie uma área de navegação com <code>&lt;nav&gt;</code> contendo três links com <code>&lt;a&gt;</code>. Os links são: <strong>Etapas</strong>, <strong>Atividades</strong> e <strong>Inscrição</strong>. O separador entre eles é o caractere <code>|</code>.</p>
+
+        <div class="highlight-box amber" style="margin-top:12px;">
+          <strong>⚠️ Ponto crítico de atenção:</strong> cada <code>href</code> deve corresponder ao <code>id</code> que você vai criar nas próximas etapas. O enunciado define:
+          <ul style="margin:6px 0 0 22px;">
+            <li>Link <strong>Etapas</strong> → <code>href="#etapas"</code></li>
+            <li>Link <strong>Atividades</strong> → <code>href="#atividades"</code></li>
+            <li>Link <strong>Inscrição</strong> → <code>href="#inscricao"</code> <em>(sem acento no href)</em></li>
+          </ul>
+          Se o <code>href</code> e o <code>id</code> não baterem exatamente, o link não funciona.
+        </div>
+      </div>
+
+      <div class="etapa-card" data-etapa="ETAPA 3" data-num="3">
+        <h3>📋 Lista numerada com <code>&lt;ol&gt;</code></h3>
+        <p>Depois do <code>&lt;nav&gt;</code>, crie um <code>&lt;h2&gt;</code> com o texto <strong>Como participar</strong> e <code>id="etapas"</code>. Em seguida, uma lista ordenada com três itens. Depois da lista, cinco parágrafos.</p>
+
+        <div class="highlight-box purple" style="margin-top:12px;">
+          <strong>Textos exatos — copie daqui:</strong>
+          <p style="margin:8px 0 4px;"><strong>Os três <code>&lt;li&gt;</code> na ordem:</strong></p>
+          <ol style="margin:4px 0 12px 22px;">
+            <li>Escolha uma atividade.</li>
+            <li>Preencha o formulário.</li>
+            <li>Envie sua inscrição.</li>
+          </ol>
+          <p style="margin:8px 0 4px;"><strong>Os cinco <code>&lt;p&gt;</code> na ordem:</strong></p>
+          <ol style="margin:4px 0 0 22px;">
+            <li>Leia as orientações antes de continuar.</li>
+            <li>As atividades são destinadas aos estudantes da escola.</li>
+            <li>Consulte os horários e escolha a opção desejada.</li>
+            <li>Organize seus dados antes de preencher a inscrição.</li>
+            <li>Confira todas as informações antes de enviar.</li>
+          </ol>
+        </div>
+
+        <div class="highlight-box blue" style="margin-top:12px;">
+          <strong>Detalhe que não deve passar despercebido:</strong> o <code>id="etapas"</code> fica no <code>&lt;h2&gt;</code>, não na lista <code>&lt;ol&gt;</code>. Isso é o que faz o link "Etapas" rolar até o título.
+        </div>
+      </div>
+
+      <div class="etapa-card" data-etapa="ETAPA 4" data-num="4">
+        <h3>📊 Tabela com <code>&lt;table&gt;</code></h3>
+        <p>Depois dos cinco parágrafos, crie um <code>&lt;h2&gt;</code> com o texto <strong>Atividades disponíveis</strong> e <code>id="atividades"</code>. Em seguida, a tabela com <code>border="1"</code>, uma linha de cabeçalho com dois <code>&lt;th&gt;</code>, e duas linhas de dados com dois <code>&lt;td&gt;</code> cada.</p>
+
+        <div class="highlight-box amber" style="margin-top:12px;">
+          <strong>Dados exatos da tabela:</strong>
+          <table style="margin-top:8px;background:#fff;border-radius:8px;overflow:hidden;">
+            <thead>
+              <tr style="background:#78350f;color:#fff;">
+                <th style="padding:8px 12px;text-align:left;">Atividade</th>
+                <th style="padding:8px 12px;text-align:left;">Turno</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">Desenvolvimento Web</td><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">Manhã</td></tr>
+              <tr><td style="padding:8px 12px;">Robótica</td><td style="padding:8px 12px;">Tarde</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="highlight-box purple" style="margin-top:12px;">
+          <strong>Textos exatos dos cinco <code>&lt;p&gt;</code> depois da tabela, na ordem:</strong>
+          <ol style="margin:6px 0 0 22px;">
+            <li>Desenvolvimento Web permite conhecer a criação de páginas.</li>
+            <li>Robótica explora a construção e a programação de projetos.</li>
+            <li>Escolha a atividade de acordo com seu interesse.</li>
+            <li>Depois, vá até a seção de inscrição.</li>
+            <li>Preencha os campos com atenção.</li>
+          </ol>
+        </div>
+
+        <div class="highlight-box green" style="margin-top:12px;">
+          <strong>Por que <code>border="1"</code>:</strong> sem CSS, é o único jeito de o navegador desenhar linhas visíveis na tabela. O atributo é considerado obsoleto em HTML5 moderno — normalmente usaríamos CSS — mas nesta atividade ele é intencional para você ver a grade sem nenhum estilo.
+        </div>
+      </div>
+
+      <div class="etapa-card" data-etapa="ETAPA 5" data-num="5">
+        <h3>📝 Formulário com <code>&lt;form&gt;</code></h3>
+        <p>Depois dos parágrafos da etapa 4, crie um <code>&lt;h2&gt;</code> com o texto <strong>Inscrição</strong> e <code>id="inscricao"</code>. Em seguida, o formulário com os atributos de destino e método, dois campos pareados com label e o botão de envio.</p>
+
+        <div class="highlight-box blue" style="margin-top:12px;">
+          <strong>Atributos exatos do <code>&lt;form&gt;</code>:</strong>
+          <ul style="margin:6px 0 0 22px;">
+            <li><code>action="https://httpbin.org/post"</code></li>
+            <li><code>method="post"</code></li>
+          </ul>
+        </div>
+
+        <div class="highlight-box amber" style="margin-top:12px;">
+          <strong>⚠️ Três pares de atributos que precisam bater entre si:</strong>
+          <ul style="margin:6px 0 0 22px;">
+            <li>O <code>for</code> do primeiro <code>&lt;label&gt;</code> casa com o <code>id</code> do <code>&lt;input&gt;</code> — ambos devem ser <code>nome</code>.</li>
+            <li>O <code>for</code> do segundo <code>&lt;label&gt;</code> casa com o <code>id</code> do <code>&lt;select&gt;</code> — ambos devem ser <code>atividade</code>.</li>
+            <li>O <code>name</code> de cada campo é o nome que o dado terá quando chegar ao servidor. Não confunda com o <code>id</code>, que serve para o <code>for</code> do label.</li>
+          </ul>
+        </div>
+
+        <div class="highlight-box purple" style="margin-top:12px;">
+          <strong>Atributos exatos de cada elemento do formulário:</strong>
+          <ul style="margin:6px 0 0 22px;">
+            <li>Campo <code>&lt;input&gt;</code> — <code>type="text"</code>, <code>id="nome"</code>, <code>name="nome"</code>, <code>required</code>.</li>
+            <li><code>&lt;select&gt;</code> — <code>id="atividade"</code>, <code>name="atividade"</code>.</li>
+            <li>As duas <code>&lt;option&gt;</code> — textos "Desenvolvimento Web" e "Robótica", nesta ordem.</li>
+            <li>O <code>&lt;button&gt;</code> — <code>type="submit"</code> e texto "Enviar inscrição".</li>
+            <li><code>&lt;br&gt;&lt;br&gt;</code> — um par depois do campo Nome, outro depois do <code>&lt;select&gt;</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="etapa-card" data-etapa="ETAPA 6" data-num="6">
+        <h3>🧪 Teste obrigatório</h3>
+        <p>Abra <code>index.html</code> no navegador e execute os testes da aba 5 deste material. Se todos passarem, sua página cumpre os requisitos.</p>
+        <p><strong>Resumo do que você precisa testar:</strong></p>
+        <ul>
+          <li>Clique em <strong>Etapas</strong> → a página deve rolar até o <code>&lt;h2&gt;</code> "Como participar".</li>
+          <li>Clique em <strong>Atividades</strong> → rola até "Atividades disponíveis".</li>
+          <li>Clique em <strong>Inscrição</strong> → rola até o formulário.</li>
+          <li>Preencha o nome, escolha a atividade e clique em <strong>Enviar inscrição</strong>.</li>
+          <li>Observe a resposta do serviço externo (se houver internet).</li>
+        </ul>
+        <div class="highlight-box rose" style="margin-top:12px;">
+          <strong>⚠️ Aviso importante:</strong> o <code>httpbin.org</code> é um serviço de <em>testes</em>. Ele não faz inscrição real, não guarda dados e não envia e-mail. Use somente dados fictícios (como "Ana" e "teste@exemplo.com") para não expor informação pessoal real na web.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ ABA 3 — RESULTADO RENDERIZADO ============ -->
+  <div id="aba-resultado" class="tab-content">
+    <section class="card">
+      <h2>👁️ Resultado esperado na tela</h2>
+      <p>Esta é a aparência visual que a sua página deve produzir, rodando em HTML puro — sem CSS, sem JavaScript. Use como referência para conferir se o resultado do seu arquivo bate com o esperado.</p>
+
+      <div class="highlight-box amber">
+        <strong>⚠️ O que você está prestes a ver é HTML "cru":</strong> a fonte é a padrão do navegador (Times New Roman em muitos sistemas), a tabela tem bordas simples do atributo <code>border="1"</code>, os links aparecem em azul sublinhado, e os espaçamentos são os do navegador. Nenhum estilo foi aplicado.
+      </div>
+
+      <div class="highlight-box blue">
+        <strong>💡 Como usar esta aba para estudar:</strong> abra também o seu <code>index.html</code> lado a lado. Compare o que aparece na tela. Se algo estiver diferente — ordem, texto, alinhamento, desaparecimento de um elemento —, volte à etapa correspondente do enunciado. O navegador mostra o resultado; o enunciado mostra o código.
+      </div>
+
+      <div class="resultado-frame">
+        <div class="frame-topo">
+          <span class="url-fake">file:///index.html</span>
+          <div class="frame-acoes">
+            <button type="button" class="btn-primario" id="btn-recriar-frame">🔄 Recarregar</button>
+          </div>
+        </div>
+        <iframe id="iframe-resultado" title="Aparência esperada do index.html"></iframe>
+      </div>
+
+      <h3>🔍 O que observar na página renderizada</h3>
+      <ul>
+        <li><strong>A navegação</strong> é texto com links azuis sublinhados separados por <code>|</code>. Nenhum estilo de botão ou de barra.</li>
+        <li><strong>A lista</strong> aparece numerada (1, 2, 3) — numeração automática gerada pelo navegador.</li>
+        <li><strong>A tabela</strong> tem grade visível, cabeçalhos em negrito e centralizados (comportamento padrão de <code>&lt;th&gt;</code>).</li>
+        <li><strong>Os parágrafos</strong> aparecem com espaço entre si (margem vertical padrão de <code>&lt;p&gt;</code>).</li>
+        <li><strong>O formulário</strong> tem o campo Nome, o <code>&lt;select&gt;</code> com as duas opções e o botão "Enviar inscrição".</li>
+      </ul>
+
+      <div class="highlight-box green">
+        <strong>💡 Por que estudar HTML puro assim vale a pena:</strong> quando você sentir como o navegador organiza os elementos sem CSS, você vai entender que CSS não cria a estrutura — ele apenas a veste. O entendimento da estrutura crua é o que permite depois separar o que é marcação do que é apresentação.
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ ABA 4 — VALIDAÇÃO ============ -->
+  <div id="aba-validacao" class="tab-content">
+    <section class="card">
+      <h2>✅ Validação item a item</h2>
+      <p>Compare o seu <code>index.html</code> com cada item abaixo. Marque conforme confirmar que cada requisito está cumprido no seu código.</p>
+
+      <div class="validacao-progresso">
+        <span id="validacao-contador">0 de 24 requisitos verificados</span>
+        <div class="validacao-barra">
+          <div class="validacao-barra-preenchimento" id="validacao-barra"></div>
+        </div>
+      </div>
+
+      <h3>Estrutura base</h3>
+      <div id="lista-validacao-base" class="validacao-lista"></div>
+
+      <h3>Navegação (<code>&lt;nav&gt;</code>)</h3>
+      <div id="lista-validacao-nav" class="validacao-lista"></div>
+
+      <h3>Lista e parágrafos da seção "Como participar"</h3>
+      <div id="lista-validacao-etapas" class="validacao-lista"></div>
+
+      <h3>Tabela e parágrafos da seção "Atividades disponíveis"</h3>
+      <div id="lista-validacao-tabela" class="validacao-lista"></div>
+
+      <h3>Formulário da seção "Inscrição"</h3>
+      <div id="lista-validacao-form" class="validacao-lista"></div>
+
+      <div class="highlight-box green" style="margin-top:20px;">
+        <strong>✅ Progresso completo:</strong> quando todos os 24 itens estiverem marcados, o seu <code>index.html</code> cumpre exatamente o enunciado desta atividade. Confira ainda uma última vez se você não usou CSS, JavaScript ou a tag <code>&lt;section&gt;</code> em lugar nenhum.
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ ABA 5 — TESTES OBRIGATÓRIOS ============ -->
+  <div id="aba-testes" class="tab-content">
+    <section class="card">
+      <h2>🧪 Testes obrigatórios</h2>
+      <p>Depois de montar o <code>index.html</code>, execute os testes abaixo na ordem. Eles provam que a página funciona de fato.</p>
+
+      <div class="teste-item">
+        <div class="teste-num">1</div>
+        <div class="teste-corpo">
+          <strong>Teste de navegação — Etapas</strong>
+          <p>Clique em <strong>Etapas</strong> na barra de navegação. A página deve rolar até o título <em>"Como participar"</em>. Observe que a URL ganha <code>#etapas</code> no final.</p>
+        </div>
+      </div>
+
+      <div class="teste-item">
+        <div class="teste-num">2</div>
+        <div class="teste-corpo">
+          <strong>Teste de navegação — Atividades</strong>
+          <p>Clique em <strong>Atividades</strong>. A página deve rolar até o título <em>"Atividades disponíveis"</em>.</p>
+        </div>
+      </div>
+
+      <div class="teste-item">
+        <div class="teste-num">3</div>
+        <div class="teste-corpo">
+          <strong>Teste de navegação — Inscrição</strong>
+          <p>Clique em <strong>Inscrição</strong>. A página deve rolar até o título <em>"Inscrição"</em> e mostrar o formulário.</p>
+        </div>
+      </div>
+
+      <div class="teste-item">
+        <div class="teste-num">4</div>
+        <div class="teste-corpo">
+          <strong>Teste do formulário</strong>
+          <p>Preencha o nome, escolha uma atividade no <code>&lt;select&gt;</code> e clique em <strong>Enviar inscrição</strong>. Sem internet, o navegador mostrará um erro de destino — isso é esperado e prova que o formulário tentou enviar.</p>
+        </div>
+      </div>
+
+      <div class="teste-item">
+        <div class="teste-num">5</div>
+        <div class="teste-corpo">
+          <strong>Teste com internet — observação do httpbin</strong>
+          <p>Se houver conexão, você verá uma página em branco com um texto no formato JSON. Nele aparecerá <code>"form": {"nome": "...", "atividade": "..."}</code>. Isso prova que os dados chegaram ao destino e foram recebidos pelo serviço.</p>
+        </div>
+      </div>
+
+      <div class="highlight-box rose">
+        <strong>⚠️ Lembrete:</strong> o httpbin.org é um serviço de testes públicos e abertos. Nunca digite dados reais (nome completo verdadeiro, e-mail pessoal, senha). Use sempre dados fictícios como "Ana", "João", "teste@exemplo.com".
+      </div>
+
+      <h3>🎯 Como saber se passou em todos os testes</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin:16px 0;">
+        <thead>
+          <tr style="background:linear-gradient(135deg,#0c4a6e,#0d9488);color:#fff;">
+            <th style="padding:12px;text-align:left;">Teste</th>
+            <th style="padding:12px;text-align:left;">Resultado esperado</th>
+            <th style="padding:12px;text-align:left;">Se falhar, verifique</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Navegação Etapas</td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Rola até "Como participar"</td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">O <code>id="etapas"</code> está no <code>&lt;h2&gt;</code>?</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Navegação Atividades</td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Rola até "Atividades disponíveis"</td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">O <code>id="atividades"</code> está no <code>&lt;h2&gt;</code>?</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Navegação Inscrição</td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Rola até "Inscrição"</td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">O <code>id="inscricao"</code> está no <code>&lt;h2&gt;</code> e o <code>href</code> também está sem acento?</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Formulário</td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">Tenta enviar ao httpbin</td>
+            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">O <code>action</code> e <code>method</code> estão corretos no <code>&lt;form&gt;</code>?</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;">Resposta JSON</td>
+            <td style="padding:10px;">Mostra <code>"form": { ... }</code></td>
+            <td style="padding:10px;">Conexão de internet ativa? Use dados fictícios.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <footer style="text-align:center;color:#94a3b8;font-size:.78rem;padding:22px 0;">
+    🏫 Programação Front-End &bull; Atividade Prática: Navegação, Lista, Tabela e Formulário &bull; 2026
+  </footer>
+</div>
+
+<div class="toast-notificacao" id="toast">✅ Feito!</div>
+<button type="button" class="btn-top" id="btn-topo">⬆️ Topo</button>
+
+<script>
+function esc(t){
+  return String(t == null ? '' : t)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ============================================================
+   CÓDIGO PARA O IFRAME (uso interno, não exposto ao aluno)
+   ============================================================ */
+var CODIGO_RESULTADO =
+'<!DOCTYPE html>\n' +
+'<html lang="pt-BR">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <title>Atividades escolares</title>\n' +
+'</head>\n' +
+'<body>\n' +
+'\n' +
+'  <h1>Atividades escolares</h1>\n' +
+'\n' +
+'  <nav>\n' +
+'    <a href="#etapas">Etapas</a> |\n' +
+'    <a href="#atividades">Atividades</a> |\n' +
+'    <a href="#inscricao">Inscrição</a>\n' +
+'  </nav>\n' +
+'\n' +
+'  <h2 id="etapas">Como participar</h2>\n' +
+'  <ol>\n' +
+'    <li>Escolha uma atividade.</li>\n' +
+'    <li>Preencha o formulário.</li>\n' +
+'    <li>Envie sua inscrição.</li>\n' +
+'  </ol>\n' +
+'\n' +
+'  <p>Leia as orientações antes de continuar.</p>\n' +
+'  <p>As atividades são destinadas aos estudantes da escola.</p>\n' +
+'  <p>Consulte os horários e escolha a opção desejada.</p>\n' +
+'  <p>Organize seus dados antes de preencher a inscrição.</p>\n' +
+'  <p>Confira todas as informações antes de enviar.</p>\n' +
+'\n' +
+'  <h2 id="atividades">Atividades disponíveis</h2>\n' +
+'  <table border="1">\n' +
+'    <tr><th>Atividade</th><th>Turno</th></tr>\n' +
+'    <tr><td>Desenvolvimento Web</td><td>Manhã</td></tr>\n' +
+'    <tr><td>Robótica</td><td>Tarde</td></tr>\n' +
+'  </table>\n' +
+'\n' +
+'  <p>Desenvolvimento Web permite conhecer a criação de páginas.</p>\n' +
+'  <p>Robótica explora a construção e a programação de projetos.</p>\n' +
+'  <p>Escolha a atividade de acordo com seu interesse.</p>\n' +
+'  <p>Depois, vá até a seção de inscrição.</p>\n' +
+'  <p>Preencha os campos com atenção.</p>\n' +
+'\n' +
+'  <h2 id="inscricao">Inscrição</h2>\n' +
+'  <form action="https://httpbin.org/post" method="post">\n' +
+'    <label for="nome">Nome:</label>\n' +
+'    <input id="nome" name="nome" required>\n' +
+'\n' +
+'    <br><br>\n' +
+'\n' +
+'    <label for="atividade">Atividade:</label>\n' +
+'    <select id="atividade" name="atividade">\n' +
+'      <option>Desenvolvimento Web</option>\n' +
+'      <option>Robótica</option>\n' +
+'    </select>\n' +
+'\n' +
+'    <br><br>\n' +
+'\n' +
+'    <button type="submit">Enviar inscrição</button>\n' +
+'  </form>\n' +
+'\n' +
+'</body>\n' +
+'</html>\n';
+
+/* ============================================================
+   REQUISITOS DE VALIDAÇÃO
+   ============================================================ */
+var REQUISITOS = {
+  base: [
+    { id:'base-1', texto:'Arquivo salvo como <code>index.html</code>', detalhe:'Nome exato, sem variações como "index.HTML" ou "atividade.html".' },
+    { id:'base-2', texto:'Primeira linha: <code>&lt;!DOCTYPE html&gt;</code>', detalhe:'Indica ao navegador que o documento segue o padrão HTML5.' },
+    { id:'base-3', texto:'Tag <code>&lt;html lang="pt-BR"&gt;</code>', detalhe:'O atributo lang define o idioma. "pt-BR" é o correto para português do Brasil.' },
+    { id:'base-4', texto:'<code>&lt;meta charset="UTF-8"&gt;</code> dentro do <code>&lt;head&gt;</code>', detalhe:'Sem essa meta, caracteres como "ã" e "ç" podem aparecer trocados.' },
+    { id:'base-5', texto:'<code>&lt;title&gt;Atividades escolares&lt;/title&gt;</code>', detalhe:'Texto exato com A maiúsculo e sem acento em "Atividades" (a palavra não tem acento).' },
+    { id:'base-6', texto:'<code>&lt;h1&gt;Atividades escolares&lt;/h1&gt;</code> no início do body', detalhe:'Um único h1 na página, como primeiro conteúdo visível.' }
+  ],
+  nav: [
+    { id:'nav-1', texto:'Tag <code>&lt;nav&gt;</code> logo após o <code>&lt;h1&gt;</code>', detalhe:'A área de navegação vem antes de qualquer outro conteúdo.' },
+    { id:'nav-2', texto:'Três tags <code>&lt;a&gt;</code> dentro do <code>&lt;nav&gt;</code>', detalhe:'Cada link em uma tag <a> separada.' },
+    { id:'nav-3', texto:'Link <strong>Etapas</strong> com <code>href="#etapas"</code>', detalhe:'O valor "#etapas" aponta para o id que será criado no h2 correspondente.' },
+    { id:'nav-4', texto:'Link <strong>Atividades</strong> com <code>href="#atividades"</code>', detalhe:'Igual ao anterior, apontando para o id "atividades".' },
+    { id:'nav-5', texto:'Link <strong>Inscrição</strong> com <code>href="#inscricao"</code>', detalhe:'Atenção: "inscricao" sem acento no href, para corresponder ao id.' },
+    { id:'nav-6', texto:'Separador <code>|</code> entre os links', detalhe:'O caractere pipe (barra vertical) separa visualmente os links.' }
+  ],
+  etapas: [
+    { id:'etapas-1', texto:'<code>&lt;h2 id="etapas"&gt;Como participar&lt;/h2&gt;</code>', detalhe:'Texto exato "Como participar" e o id no próprio h2.' },
+    { id:'etapas-2', texto:'Lista com <code>&lt;ol&gt;</code> contendo três <code>&lt;li&gt;</code>', detalhe:'Lista ordenada (numerada), não <ul>.' },
+    { id:'etapas-3', texto:'Primeiro item: <code>Escolha uma atividade.</code>', detalhe:'Com ponto final, conforme enunciado.' },
+    { id:'etapas-4', texto:'Segundo item: <code>Preencha o formulário.</code>', detalhe:'Com acento em "formulário".' },
+    { id:'etapas-5', texto:'Terceiro item: <code>Envie sua inscrição.</code>', detalhe:'Com acento em "inscrição".' },
+    { id:'etapas-6', texto:'Cinco <code>&lt;p&gt;</code> após a lista', detalhe:'Textos exatos na ordem especificada na etapa 3.' }
+  ],
+  tabela: [
+    { id:'tabela-1', texto:'<code>&lt;h2 id="atividades"&gt;Atividades disponíveis&lt;/h2&gt;</code>', detalhe:'Id "atividades" no h2, texto com acento em "disponíveis".' },
+    { id:'tabela-2', texto:'<code>&lt;table border="1"&gt;</code>', detalhe:'O atributo border é obrigatório nesta atividade (excepcionalmente, para visualizar a grade sem CSS).' },
+    { id:'tabela-3', texto:'Linha de cabeçalho com dois <code>&lt;th&gt;</code>', detalhe:'Primeira <tr> contém th Atividade e th Turno.' },
+    { id:'tabela-4', texto:'Duas linhas de dados com dois <code>&lt;td&gt;</code> cada', detalhe:'Desenvolvimento Web / Manhã e Robótica / Tarde.' },
+    { id:'tabela-5', texto:'Cinco <code>&lt;p&gt;</code> após a tabela', detalhe:'Textos exatos na ordem especificada na etapa 4.' }
+  ],
+  form: [
+    { id:'form-1', texto:'<code>&lt;h2 id="inscricao"&gt;Inscrição&lt;/h2&gt;</code>', detalhe:'Id "inscricao" sem acento, texto com acento.' },
+    { id:'form-2', texto:'<code>&lt;form action="https://httpbin.org/post" method="post"&gt;</code>', detalhe:'Action e method exatos. Sem isso, o formulário não envia para lugar nenhum.' },
+    { id:'form-3', texto:'Label "Nome:" com <code>for="nome"</code>', detalhe:'O for deve ser exatamente "nome" para casar com o input.' },
+    { id:'form-4', texto:'Input com <code>type="text" id="nome" name="nome" required</code>', detalhe:'Os atributos estão todos nessa ordem recomendada. O required impede envio vazio.' },
+    { id:'form-5', texto:'Label "Atividade:" com <code>for="atividade"</code>', detalhe:'O for deve ser "atividade" para casar com o select.' },
+    { id:'form-6', texto:'<code>&lt;select id="atividade" name="atividade"&gt;</code> com duas <code>&lt;option&gt;</code>', detalhe:'Opções: Desenvolvimento Web e Robótica.' },
+    { id:'form-7', texto:'Dois pares de <code>&lt;br&gt;&lt;br&gt;</code>', detalhe:'Um após o input Nome, outro após o select Atividade.' },
+    { id:'form-8', texto:'<code>&lt;button type="submit"&gt;Enviar inscrição&lt;/button&gt;</code>', detalhe:'Texto exato do botão e type="submit" para disparar o envio.' }
+  ]
+};
+
+/* ============================================================
+   RENDERIZAÇÃO DA VALIDAÇÃO
+   ============================================================ */
+function renderizarValidacao(){
+  Object.keys(REQUISITOS).forEach(function(grupo){
+    var container = document.getElementById('lista-validacao-' + grupo);
+    if (!container) return;
+    var html = '';
+    REQUISITOS[grupo].forEach(function(req){
+      html += '<div class="validacao-item" data-req="' + esc(req.id) + '">' +
+                '<div class="check-box"></div>' +
+                '<div class="info">' +
+                  '<strong>' + req.texto + '</strong>' +
+                  '<p>' + req.detalhe + '</p>' +
+                '</div>' +
+              '</div>';
+    });
+    container.innerHTML = html;
+  });
+
+  document.querySelectorAll('.validacao-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      item.classList.toggle('concluido');
+      atualizarProgressoValidacao();
+    });
+  });
+
+  atualizarProgressoValidacao();
+}
+
+function atualizarProgressoValidacao(){
+  var total = document.querySelectorAll('.validacao-item').length;
+  var feitos = document.querySelectorAll('.validacao-item.concluido').length;
+  var cont = document.getElementById('validacao-contador');
+  var barra = document.getElementById('validacao-barra');
+  if (cont) cont.textContent = feitos + ' de ' + total + ' requisitos verificados';
+  if (barra) barra.style.width = ((feitos / total) * 100) + '%';
+}
+
+/* ============================================================
+   IFRAME RESULTADO
+   ============================================================ */
+function renderizarFrameResultado(){
+  var iframe = document.getElementById('iframe-resultado');
+  if (!iframe) return;
+  iframe.srcdoc = CODIGO_RESULTADO;
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+var toastTimer = null;
+function toast(msg){
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.display = 'block';
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display = 'none'; }, 3200);
+}
+
+/* ============================================================
+   ABAS
+   ============================================================ */
+function trocarAba(idAba, botao){
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+  botao.classList.add('active');
+  var alvo = document.getElementById(idAba);
+  if (alvo) alvo.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ trocarAba(btn.dataset.aba, btn); });
+  });
+
+  renderizarValidacao();
+  renderizarFrameResultado();
+
+  var btnRecriar = document.getElementById('btn-recriar-frame');
+  if (btnRecriar) btnRecriar.addEventListener('click', function(){
+    renderizarFrameResultado();
+    toast('🔄 Vista de resultado recarregada.');
+  });
+
+  var btnTopo = document.getElementById('btn-topo');
+  if (btnTopo) btnTopo.addEventListener('click', function(){ window.scrollTo({top:0,behavior:'smooth'}); });
+});
+</script>
+</body>
+</html>
